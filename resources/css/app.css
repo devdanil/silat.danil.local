@@ -1,0 +1,136 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+.btn {
+    @apply inline-flex items-center border border-transparent rounded-lg font-semibold  text-white uppercase tracking-widest focus:ring-offset-1 focus:outline-none focus:ring disabled:opacity-50 transition shadow;
+}
+.btn.btn-sm {
+    @apply p-1.5 text-xs;
+}
+.btn.btn-md {
+    @apply px-3 py-1.5 text-xs;
+}
+.btn.btn-lg {
+    @apply px-4 py-2 text-sm;
+}
+.btn.btn-block {
+    @apply block;
+}
+.btn-slate {
+    @apply disabled:hover:bg-slate-500 disabled:active:bg-slate-500 shadow-slate-300 bg-slate-500 hover:bg-slate-600 active:bg-slate-700 focus:border-transparent focus:ring-slate-200;
+}
+.btn-gray {
+    @apply disabled:hover:bg-gray-500 disabled:active:bg-gray-500 shadow-gray-300 bg-gray-500 hover:bg-gray-600 active:bg-gray-700 focus:border-transparent focus:ring-gray-200;
+}
+.btn-zinc {
+    @apply disabled:hover:bg-zinc-500 disabled:active:bg-zinc-500 shadow-zinc-300 bg-zinc-500 hover:bg-zinc-600 active:bg-zinc-700 focus:border-transparent focus:ring-zinc-200;
+}
+.btn-neutral {
+    @apply disabled:hover:bg-neutral-500 disabled:active:bg-neutral-500 shadow-neutral-300 bg-neutral-500 hover:bg-neutral-600 active:bg-neutral-700 focus:border-transparent focus:ring-neutral-200;
+}
+.btn-stone {
+    @apply disabled:hover:bg-stone-500 disabled:active:bg-stone-500 shadow-stone-300 bg-stone-500 hover:bg-stone-600 active:bg-stone-700 focus:border-transparent focus:ring-stone-200;
+}
+.btn-red {
+    @apply disabled:hover:bg-red-500 disabled:active:bg-red-500 shadow-red-300 bg-red-500 hover:bg-red-600 active:bg-red-700 focus:border-transparent focus:ring-red-200;
+}
+.btn-orange {
+    @apply disabled:hover:bg-orange-500 disabled:active:bg-orange-500 shadow-orange-300 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 focus:border-transparent focus:ring-orange-200;
+}
+.btn-amber {
+    @apply disabled:hover:bg-amber-500 disabled:active:bg-amber-500 shadow-amber-300 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 focus:border-transparent focus:ring-amber-200;
+}
+.btn-yellow {
+    @apply disabled:hover:bg-yellow-500 disabled:active:bg-yellow-500 shadow-yellow-300 bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 focus:border-transparent focus:ring-yellow-200;
+}
+.btn-lime {
+    @apply disabled:hover:bg-lime-500 disabled:active:bg-lime-500 shadow-lime-300 bg-lime-500 hover:bg-lime-600 active:bg-lime-700 focus:border-transparent focus:ring-lime-200;
+}
+.btn-green {
+    @apply disabled:hover:bg-green-500 disabled:active:bg-green-500 shadow-green-300 bg-green-500 hover:bg-green-600 active:bg-green-700 focus:border-transparent focus:ring-green-200;
+}
+.btn-emerald {
+    @apply disabled:hover:bg-emerald-500 disabled:active:bg-emerald-500 shadow-emerald-300 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 focus:border-transparent focus:ring-emerald-200;
+}
+.btn-teal {
+    @apply disabled:hover:bg-teal-500 disabled:active:bg-teal-500 shadow-teal-300 bg-teal-500 hover:bg-teal-600 active:bg-teal-700 focus:border-transparent focus:ring-teal-200;
+}
+.btn-cyan {
+    @apply disabled:hover:bg-cyan-500 disabled:active:bg-cyan-500 shadow-cyan-300 bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 focus:border-transparent focus:ring-cyan-200;
+}
+.btn-sky {
+    @apply disabled:hover:bg-sky-500 disabled:active:bg-sky-500 shadow-sky-300 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 focus:border-transparent focus:ring-sky-200;
+}
+.btn-blue {
+    @apply disabled:hover:bg-blue-500 disabled:active:bg-blue-500 shadow-blue-300 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 focus:border-transparent focus:ring-blue-200;
+}
+.btn-indigo {
+    @apply disabled:hover:bg-indigo-500 disabled:active:bg-indigo-500 shadow-indigo-300 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 focus:border-transparent focus:ring-indigo-200;
+}
+.btn-violet {
+    @apply disabled:hover:bg-violet-500 disabled:active:bg-violet-500 shadow-violet-300 bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:border-transparent focus:ring-violet-200;
+}
+.btn-purple {
+    @apply disabled:hover:bg-purple-500 disabled:active:bg-purple-500 shadow-purple-300 bg-purple-500 hover:bg-purple-600 active:bg-purple-700 focus:border-transparent focus:ring-purple-200;
+}
+.btn-fuchsia {
+    @apply disabled:hover:bg-fuchsia-500 disabled:active:bg-fuchsia-500 shadow-fuchsia-300 bg-fuchsia-500 hover:bg-fuchsia-600 active:bg-fuchsia-700 focus:border-transparent focus:ring-fuchsia-200;
+}
+.btn-pink {
+    @apply disabled:hover:bg-pink-500 disabled:active:bg-pink-500 shadow-pink-300 bg-pink-500 hover:bg-pink-600 active:bg-pink-700 focus:border-transparent focus:ring-pink-200;
+}
+.btn-rose {
+    @apply disabled:hover:bg-rose-500 disabled:active:bg-rose-500 shadow-rose-300 bg-rose-500 hover:bg-rose-600 active:bg-rose-700 focus:border-transparent focus:ring-rose-200;
+}
+.ck-editor__editable {
+    min-height: 100px;
+}
+.ck-content blockquote,
+.ck-content dl,
+.ck-content dd,
+.ck-content h1,
+.ck-content h2,
+.ck-content h3,
+.ck-content h4,
+.ck-content h5,
+.ck-content h6,
+.ck-content hr,
+.ck-content figure,
+.ck-content p,
+.ck-content pre {
+    margin: revert;
+}
+
+.ck-content ol,
+.ck-content ul {
+    list-style: revert;
+    margin: revert;
+    padding: revert;
+}
+
+.ck-content table {
+    border-collapse: revert;
+}
+
+.ck-content h1,
+.ck-content h2,
+.ck-content h3,
+.ck-content h4,
+.ck-content h5,
+.ck-content h6 {
+    font-size: revert;
+    font-weight: revert;
+}
+
+.f-input {
+    @apply focus:ring-sky-300 py-1.5 focus:border-sky-400 w-full rounded sm:text-sm border-gray-300;
+}
+.th {
+    @apply p-3 text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+.td {
+    @apply px-3 py-2 align-top;
+}
+.text-red {
+    color: red;
+}
