@@ -36,14 +36,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request)
     {
-        $rolesID = $request->user()->roles()->pluck('role_id')->all();
-        $menus = Menu::whereNull('parent_id')->whereHas('roles', function ($query) use ($rolesID) {
+        $rolesID = $request->user() ? $request->user()->roles()->pluck('role_id')->all() : [];
+        $menus = $request->user() ? Menu::whereNull('parent_id')->whereHas('roles', function ($query) use ($rolesID) {
             $query->whereIn('role_id', $rolesID);
         })->with('childs', function ($query) use ($rolesID) {
             $query->whereHas('roles', function ($query2) use ($rolesID) {
                 $query2->whereIn('role_id', $rolesID);
             });
-        })->orderBy('order', 'asc')->get();
+        })->orderBy('order', 'asc')->get() : [];
         $rolesName = Role::whereIn('id', $rolesID)->pluck('name')->all();
 
         return array_merge(parent::share($request), [

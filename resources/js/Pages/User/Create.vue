@@ -30,7 +30,7 @@
                     class="bg-white shadow rounded-lg border-t-2 border-sky-500"
                 >
                     <div
-                        class="overflow-auto p-6 text-gray-700 text-sm font-medium"
+                        class="overflow-auto py-6 text-gray-700 text-sm font-medium"
                     >
                         <div class="grid sm:grid-cols-3 gap-3 px-6 pb-3">
                             <div class="col-span-1">
@@ -41,6 +41,7 @@
                             <div class="col-span-2">
                                 <input
                                     type="text"
+                                    @input="setNip"
                                     v-model="form.nip"
                                     class="f-input px-2"
                                     required
@@ -48,13 +49,14 @@
                             </div>
                             <div class="col-span-1">
                                 <label class="block">
-                                    NIP<i class="text-red-500 tex-xs">*</i>
+                                    Nama<i class="text-red-500 tex-xs">*</i>
                                 </label>
                             </div>
                             <div class="col-span-2">
                                 <input
+                                    maxlength="150"
                                     type="text"
-                                    v-model="form.nip"
+                                    v-model="form.nama"
                                     class="f-input px-2"
                                     required
                                 />
@@ -67,6 +69,7 @@
                             <div class="col-span-2">
                                 <input
                                     type="email"
+                                    maxlength="150"
                                     v-model="form.email"
                                     class="f-input px-2"
                                     required
@@ -80,6 +83,7 @@
                             <div class="col-span-2">
                                 <input
                                     type="password"
+                                    maxlength="100"
                                     v-model="form.password"
                                     class="f-input px-2"
                                     required
@@ -95,6 +99,7 @@
                             </div>
                             <div class="col-span-2">
                                 <input
+                                    maxlength="100"
                                     type="password"
                                     v-model="form.password_confirmation"
                                     class="f-input px-2"
@@ -103,7 +108,27 @@
                             </div>
                             <div class="col-span-1">
                                 <label class="block">
-                                    Foto<i class="text-red-500 tex-xs">*</i>
+                                    Role<i class="text-red-500 tex-xs">*</i>
+                                </label>
+                            </div>
+                            <div class="col-span-2">
+                                <select
+                                    class="f-input px-2"
+                                    v-model="form.role_id"
+                                >
+                                    <option value="" disabled>Pilih</option>
+                                    <option
+                                        :value="role.id"
+                                        v-for="role in roles"
+                                        :key="role.id"
+                                    >
+                                        {{ role.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block">
+                                    Foto <i class="pl-1 tex-xs">(Optional)</i>
                                 </label>
                             </div>
                             <div class="col-span-2">
@@ -121,29 +146,29 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div
-                        class="p-6 flex flex-col sm:block border-t bg-gray-50 rounded-b-lg space-y-1"
-                    >
-                        <div class="col-span-1">
-                            <label class="block">
-                                Foto<i class="text-red-500 tex-xs">*</i>
-                            </label>
-                        </div>
-                        <div class="col-span-2">
-                            <button
-                                type="submit"
-                                title="Simpan"
-                                class="btn btn-md btn-sky sm:ml-1"
-                            >
-                                <ArrowDownOnSquareIcon class="h-5 w-5 mr-2" />
-                                Simpan
-                            </button>
-                            <Link
-                                :href="route('users.index')"
-                                class="btn btn-md btn-slate sm:ml-1"
-                                ><XMarkIcon class="w-5 h-5 mr-2" />Batal</Link
-                            >
+                        <div
+                            class="grid bg-gray-50 sm:grid-cols-3 gap-3 px-6 pt-3 border-t"
+                        >
+                            <div class="col-span-1"></div>
+                            <div class="col-span-2">
+                                <button
+                                    type="submit"
+                                    title="Simpan"
+                                    class="btn btn-md btn-sky sm:ml-1"
+                                >
+                                    <ArrowDownOnSquareIcon
+                                        class="h-5 w-5 mr-2"
+                                    />
+                                    Simpan
+                                </button>
+                                <Link
+                                    :href="route('users.index')"
+                                    class="btn btn-md btn-slate sm:ml-1"
+                                    ><XMarkIcon
+                                        class="w-5 h-5 mr-2"
+                                    />Batal</Link
+                                >
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -160,6 +185,7 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
     ArrowDownOnSquareIcon,
+    XMarkIcon,
 } from "@heroicons/vue/24/solid";
 export default defineComponent({
     components: {
@@ -168,11 +194,12 @@ export default defineComponent({
         ChevronLeftIcon,
         ChevronRightIcon,
         ArrowDownOnSquareIcon,
+        XMarkIcon,
     },
 
     props: {
         title: String,
-        jabatans: Array,
+        roles: Array,
     },
     data() {
         return {
@@ -182,12 +209,16 @@ export default defineComponent({
                 email: "",
                 password: "",
                 password_confirmation: "",
+                role_id: "",
                 foto: null,
             }),
         };
     },
 
     methods: {
+        setNip() {
+            this.form.nip = this.form.nip.replace(/\D/g, "");
+        },
         submit() {
             Swal.fire({
                 text: "Apakah anda yakin akan menyimpan data ini ?",

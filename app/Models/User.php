@@ -13,9 +13,10 @@ class User extends Authenticatable
 
     protected $table = 'silat_users';
     protected $fillable = [
-        'name',
+        'nama',
         'email',
         'nip',
+        'foto',
         'password',
     ];
     protected $hidden = [
@@ -31,5 +32,10 @@ class User extends Authenticatable
     public function hasRolesID($rolesID)
     {
         return $this->roles()->whereIn('role_id', $rolesID)->count() > 0;
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'nip';
     }
 }

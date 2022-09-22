@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::post('editor/upload', [EditorController::class, 'upload'])->name('editor.upload');
 
     Route::post('bobot/{pelatihan}', [BobotController::class, 'store'])->name('bobot.store');
-    Route::resource('users', UserController::class);
+
 
     Route::resource('pendaftaran', PelatihanController::class);
     Route::resource('menus', PelatihanController::class);
@@ -67,4 +67,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('users-roles', PelatihanController::class);
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+});
+Route::middleware(['auth', 'roles:1'])->group(function () {
+    Route::resource('users', UserController::class)->except('update');
+    Route::post('users/{user}/update', [UserController::class, 'update'])->name('users.update');
 });
