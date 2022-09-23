@@ -44,7 +44,7 @@
             <div
                 class="bg-rose-500 shadow rounded-lg p-6 text-white font-semibold"
             >
-                <div class="text-xl">Pesenan Ditolak</div>
+                <div class="text-xl">Pelatihan Ditolak</div>
                 <div class="flex justify-between align-middle">
                     <InformationCircleIcon class="h-10 w-10" />
                     <div class="text-2xl">{{ count_failed }}</div>

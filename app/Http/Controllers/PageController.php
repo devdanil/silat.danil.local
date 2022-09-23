@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Menu;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PageController extends Controller

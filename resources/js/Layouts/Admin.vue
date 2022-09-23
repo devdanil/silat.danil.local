@@ -19,7 +19,7 @@
                 class="text-xl xl:text-2xl font-bold flex items-center"
             >
                 <img
-                    src="img/icon.jpg"
+                    :src="$page.props.base_url + '/img/icon.jpg'"
                     class="hidden sm:block h-9 w-auto rounded"
                 />
                 <header class="px-3">Si Pelatihan</header>
@@ -44,20 +44,14 @@
                     <button
                         v-if="$page.props.auth.user.foto"
                         class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition"
-                        :href="
-                            'https://member.mappi.or.id/files/' +
-                            $page.props.auth.user.foto
-                        "
+                        :href="$page.props.auth.user.foto"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         <img
                             class="h-8 w-8 rounded-full object-cover"
-                            :src="
-                                'https://member.mappi.or.id/files/' +
-                                $page.props.auth.user.foto
-                            "
-                            alt="N/A"
+                            :src="$page.props.auth.user.foto"
+                            :alt="$page.props.auth.user.nama"
                         />
                     </button>
 
@@ -123,11 +117,8 @@
                 <div v-if="$page.props.auth.user.foto">
                     <img
                         class="h-8 w-8 rounded-full object-cover"
-                        :src="
-                            'https://member.mappi.or.id/files/' +
-                            $page.props.auth.user.foto
-                        "
-                        alt="N/A"
+                        :src="$page.props.auth.user.foto"
+                        :alt="$page.props.auth.user.nama"
                     />
                 </div>
                 <div v-else>

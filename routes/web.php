@@ -31,8 +31,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', [PageController::class, 'dashboard'])->name('dashboard');
-
+    Route::redirect('/', '/dashboard');
+    Route::get('/dashboard', [PageController::class, 'dashboard'])->name('dashboard');
     Route::resource('pelatihan', PelatihanController::class)->except('update');
     Route::post('pelatihan/{pelatihan}/update', [PelatihanController::class, 'update'])->name('pelatihan.update');
     Route::post('pelatihan/{pelatihan}/process', [PelatihanController::class, 'process'])->name('pelatihan.process');

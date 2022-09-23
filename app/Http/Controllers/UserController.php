@@ -43,6 +43,7 @@ class UserController extends Controller
             $foto->store('public/users/');
             $data['foto'] = asset('storage/users/' . $foto->hashName());
         }
+        $data['password'] = bcrypt($data['password']);
         $user = User::create($data);
         UserRole::create(['user_id' => $user->id, 'role_id' => $request->post('role_id'), 'created_by' => Auth::id(), 'updated_by' => Auth::id()]);
         $request->session()->flash('flash.msg', "Pengguna berhasil tambah!");
@@ -77,10 +78,12 @@ class UserController extends Controller
         return Redirect::route('users.index');
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user, Request $request)
     {
         $user->roles()->delete();
         $user->delete();
+        $request->session()->flash('flash.msg', "Pengguna berhasil dihapus!");
+        $request->session()->flash('flash.error', false);
         return back();
     }
 }

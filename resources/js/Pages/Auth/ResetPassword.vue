@@ -24,7 +24,10 @@
             </div>
             <div class="px-6 py-4 bg-white shadow-md rounded-lg relative">
                 <div class="flex flex-col items-center justify-center mt-1">
-                    <img src="img/icon.jpg" class="block h-12 w-auto" />
+                    <img
+                        :src="$page.props.base_url + '/img/icon.jpg'"
+                        class="block h-12 w-auto"
+                    />
                     <div
                         class="font-extrabold text-2xl text-gray-600 text-center mt-2"
                     >
