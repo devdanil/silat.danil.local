@@ -50,6 +50,7 @@ class HandleInertiaRequests extends Middleware
             'app' => [
                 'name' => env('APP_NAME'),
             ],
+            'base_url' => env('APP_URL'),
             'auth' => [
                 'user' => $request->user(),
                 'roles' => [

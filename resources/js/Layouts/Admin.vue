@@ -19,10 +19,10 @@
                 class="text-xl xl:text-2xl font-bold flex items-center"
             >
                 <img
-                    src="/img/icon.jpg"
+                    src="img/icon.jpg"
                     class="hidden sm:block h-9 w-auto rounded"
                 />
-                <header class="px-3">Silat</header>
+                <header class="px-3">Si Pelatihan</header>
             </Link>
         </div>
         <button

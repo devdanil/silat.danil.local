@@ -11,10 +11,10 @@ const mix = require("laravel-mix");
  |
  */
 
-mix.js("resources/js/app.js", "public/js/sipelatihan.min.js")
+mix.js("resources/js/app.js", "public/js")
     .sourceMaps()
     .vue()
-    .postCss("resources/css/app.css", "public/css/sipelatihan.min.css", [
+    .postCss("resources/css/app.css", "public/css", [
         require("tailwindcss"),
         require("autoprefixer"),
     ])
