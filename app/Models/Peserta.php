@@ -20,4 +20,9 @@ class Peserta extends Model
     {
         return $this->belongsTo(Jabatan::class, 'kd_jabatan', 'kd_jabatan');
     }
+
+    public function pendaftaran()
+    {
+        return $this->hasMany(Pendaftaran::class, 'nip', 'nip');
+    }
 }

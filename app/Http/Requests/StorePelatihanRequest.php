@@ -25,13 +25,16 @@ class StorePelatihanRequest extends FormRequest
     {
         return [
             'judul' => ['required', 'max:255'],
+            'jenis_pelatihan' => ['required', 'max:50'],
+            'ket_jabatan' => ['required_if:jenis_pelatihan,fungsional', 'max:50'],
+            'instansi' => ['required', 'max:50'],
             'deskripsi' => ['required'],
             'silabus' => ['required'],
             'persyaratan' => ['required'],
             'tgl_mulai' => ['required', 'date'],
             'tgl_selesai' => ['required', 'date'],
-            'mulai_pendaftaran' => ['required_unless:tgl_mulai,null', 'date'],
-            'selesai_pendaftaran' => ['required_unless:tgl_selesai,null', 'date'],
+            'mulai_pendaftaran' => ['required_if:is_publish,t'],
+            'selesai_pendaftaran' => ['required_if:is_publish,t'],
             'kuota' => ['required', 'numeric'],
             'status_id' => ['numeric', 'max:2', 'min:1'],
             'is_publish' => ['boolean'],

@@ -13,6 +13,9 @@ class Pelatihan extends Model
 
     protected $fillable = [
         'judul',
+        'jenis_pelatihan',
+        'ket_jabatan',
+        'instansi',
         'slug',
         'deskripsi',
         'silabus',

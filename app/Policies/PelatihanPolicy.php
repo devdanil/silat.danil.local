@@ -39,6 +39,6 @@ class PelatihanPolicy
 
     public function process(User $user, Pelatihan $pelatihan, $status_id)
     {
-        return $user->hasRolesID([$pelatihan->status->role_id]) && in_array($status_id, [$pelatihan->status->next_id, $pelatihan->status->prev_id]);
+        return $user->hasRolesID([$pelatihan->status->role_id]) && in_array($status_id, [$pelatihan->status->next_id, $pelatihan->status->prev_id]) && $pelatihan->is_publish;
     }
 }

@@ -127,12 +127,9 @@
                 <div v-show="showSideBar" class="font-semibold pl-4">
                     <div
                         :title="$page.props.auth.user.nama"
-                        class="w-44 whitespace-nowrap text-ellipsis overflow-hidden"
+                        class="w-44 text-ellipsis overflow-hidden"
                     >
                         <div>{{ $page.props.auth.user.nama }}</div>
-                        <div class="text-sm">
-                            {{ $page.props.auth.user.nip }}
-                        </div>
                     </div>
                 </div>
             </div>

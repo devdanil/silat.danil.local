@@ -35,7 +35,7 @@
             <div
                 class="bg-teal-500 shadow rounded-lg p-6 text-white font-semibold"
             >
-                <div class="text-xl">Pelatihan Diterima</div>
+                <div class="text-xl">Pelatihan Selesai</div>
                 <div class="flex justify-between align-middle">
                     <CheckBadgeIcon class="h-10 w-10" />
                     <div class="text-2xl">{{ count_success }}</div>
@@ -198,7 +198,7 @@ export default defineComponent({
                         backgroundColor: "#eab308",
                     },
                     {
-                        label: "Pelatihan Diterima",
+                        label: "Pelatihan Selesai",
                         data: this.pelatihan.success,
                         backgroundColor: "#14b8a6",
                     },

@@ -150,19 +150,23 @@
                                 <span
                                     class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow"
                                     :class="{
-                                        'bg-yellow-200 text-yellow-900  shadow-yellow-500':
-                                            item.status_id == 1,
                                         'bg-sky-200 text-sky-900 shadow-sky-500':
+                                            item.status_id == 1,
+                                        'bg-yellow-200 text-yellow-900  shadow-yellow-500':
                                             item.status_id == 2 ||
                                             item.status_id == 4 ||
-                                            item.status_id == 8,
+                                            item.status_id == 6 ||
+                                            item.status_id == 8 ||
+                                            item.status_id == 9 ||
+                                            item.status_id == 11,
                                         'bg-red-200 text-red-900 shadow-red-500':
                                             item.status_id == 3 ||
                                             item.status_id == 5 ||
                                             item.status_id == 7 ||
-                                            item.status_id == 9,
+                                            item.status_id == 10 ||
+                                            item.status_id == 12,
                                         'bg-teal-200 text-teal-900 shadow-teal-500':
-                                            item.status_id == 6,
+                                            item.status_id == 13,
                                     }"
                                     >{{ item.status.name }}</span
                                 >
@@ -218,7 +222,7 @@
                     Menampilkan {{ list.data.length }} dari
                     {{ list.total }} Data
                 </div>
-                <Pagination :links="list.links" />
+                <Pagination :links="list.links" :only="['filter', 'list']" />
             </div>
         </div>
     </AppLayout>

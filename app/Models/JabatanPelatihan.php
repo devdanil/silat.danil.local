@@ -17,4 +17,8 @@ class JabatanPelatihan extends Model
     {
         return $this->belongsTo(Jabatan::class, 'kd_jabatan', 'kd_jabatan');
     }
+    public function peserta()
+    {
+        return $this->belongsTo(Peserta::class, 'kd_jabatan', 'kd_jabatan');
+    }
 }

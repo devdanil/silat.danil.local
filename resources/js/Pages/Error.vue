@@ -17,7 +17,7 @@
                     {{ description }}
                 </p>
 
-                <Link :href="route('dashboard')" class="btn btn-md btn-sky"
+                <Link :href="route('login')" class="btn btn-md btn-sky"
                     >Go back home</Link
                 >
             </div>

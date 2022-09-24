@@ -36,6 +36,54 @@
                             <label
                                 class="block text-sm font-medium text-gray-700 mb-1"
                             >
+                                Jenis Pelatihan<i class="text-red-500 tex-xs"
+                                    >*</i
+                                >
+                            </label>
+                            <select
+                                v-model="form.jenis_pelatihan"
+                                class="f-input px-2"
+                                required
+                            >
+                                <option value="">Pilih</option>
+                                <option value="fungsional">
+                                    Pelatihan Fungsional
+                                </option>
+                                <option value="teknis">Pelatihan Teknis</option>
+                                <option value="mansoskul">
+                                    Pelatihan Mansoskul
+                                </option>
+                            </select>
+                        </div>
+                        <div v-if="form.jenis_pelatihan == 'fungsional'">
+                            <label
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Keterangan Jabatan<i class="text-red-500 tex-xs"
+                                    >*</i
+                                >
+                            </label>
+                            <select
+                                v-model="form.ket_jabatan"
+                                class="f-input px-2"
+                                required
+                            >
+                                <option value="">Pilih</option>
+                                <option value="Penyetaraan">Penyetaraan</option>
+                                <option value="Inpassing">Inpassing</option>
+
+                                <option value="Pengangkatan Pertama">
+                                    Pengangkatan Pertama
+                                </option>
+                                <option value="Perpindahan JF">
+                                    Perpindahan JF
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Judul Pelatihan<i class="text-red-500 tex-xs"
                                     >*</i
                                 >
@@ -94,7 +142,7 @@
                             <label
                                 class="block text-sm font-medium text-gray-700 mb-1"
                             >
-                                Persyaratan Mengikuti Pelatihan<i
+                                Jenis JF yang dapat mengikuti<i
                                     class="text-red-500 tex-xs"
                                     >*</i
                                 >
@@ -117,6 +165,50 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="sm:flex items-start">
+                            <label
+                                class="text-sm font-medium text-gray-700 mb-1 mr-3"
+                            >
+                                Instansi Peserta Pelatihan<i
+                                    class="text-red-500 tex-xs"
+                                    >*</i
+                                >
+                            </label>
+                            <div class="text-sm text-gray-700">
+                                <div>
+                                    <input
+                                        type="radio"
+                                        name="instansi"
+                                        value="pusat"
+                                        v-model="form.instansi"
+                                        class="checked:text-sky-500 checked:ring-sky-200 focus:checked:ring-sky-200 active:ring-sky-200 border-gray-300 mr-1"
+                                        required
+                                    />
+                                    Pusat
+                                </div>
+                                <div>
+                                    <input
+                                        type="radio"
+                                        name="instansi"
+                                        value="daerah"
+                                        v-model="form.instansi"
+                                        class="checked:text-sky-500 checked:ring-sky-200 focus:checked:ring-sky-200 active:ring-sky-200 border-gray-300 mr-1"
+                                    />
+                                    Daerah
+                                </div>
+                                <div>
+                                    <input
+                                        type="radio"
+                                        name="instansi"
+                                        value="pusat_daerah"
+                                        v-model="form.instansi"
+                                        class="checked:text-sky-500 checked:ring-sky-200 focus:checked:ring-sky-200 active:ring-sky-200 border-gray-300 mr-1"
+                                    />
+                                    Pusat dan/atau Daerah
+                                </div>
+                            </div>
+                        </div>
+
                         <div>
                             <label
                                 class="block text-sm font-medium text-gray-700 mb-1"
@@ -400,6 +492,9 @@ export default defineComponent({
                 file_bahan: [],
                 is_publish: this.pelatihan.is_publish,
                 status_id: this.pelatihan.status_id,
+                jenis_pelatihan: this.pelatihan.jenis_pelatihan,
+                ket_jabatan: this.pelatihan.ket_jabatan,
+                instansi: this.pelatihan.instansi,
             }),
             editor: ClassicEditor,
             editorConfig: {
@@ -458,15 +553,15 @@ export default defineComponent({
                 let d2 = new Date(this.form.tgl_selesai);
                 let d3 = new Date(this.form.mulai_pendaftaran);
                 let d4 = new Date(this.form.selesai_pendaftaran);
-                if (d1.getTime() >= d2.getTime()) {
+                if (this.form.is_publish && d1.getTime() > d2.getTime()) {
                     Swal.fire({
-                        text: "Tanggal selesai pelatihan harus lebih besar dari tanggal mulai pelatihan",
+                        text: "Tanggal selesai pelatihan harus sama atau lebih besar dari tanggal mulai pelatihan",
                         icon: "warning",
                         confirmButtonColor: "#0ea5e9",
                     });
-                } else if (d3.getTime() >= d4.getTime()) {
+                } else if (d3.getTime() > d4.getTime()) {
                     Swal.fire({
-                        text: "Tanggal selesai pendaftaran harus lebih besar dari tanggal mulai pendaftaran",
+                        text: "Tanggal selesai pendaftaran harus sama atau lebih besar dari tanggal mulai pendaftaran",
                         icon: "warning",
                         confirmButtonColor: "#0ea5e9",
                     });
@@ -540,7 +635,7 @@ class UploadAdapter {
                 data.append("file", uploadedFile);
 
                 axios({
-                    url: "/editor/upload",
+                    url: "/sipelatihan/editor/upload",
                     method: "post",
                     data,
                     headers: {

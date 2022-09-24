@@ -38,83 +38,140 @@
                     class="btn btn-md btn-slate"
                     ><ChevronLeftIcon class="w-5 h-5 mr-2" />Kembali</Link
                 >
-                <button
-                    type="button"
-                    @click.prevent="submit"
-                    class="btn btn-md btn-teal"
-                    v-if="
-                        (pelatihan.status_id == 1 ||
-                            pelatihan.status_id == 3) &&
-                        hasRolesID([pelatihan.status.role_id])
-                    "
-                >
-                    <PaperAirplaneIcon class="h-5 w-5 mr-2" /> Submit Pelatihan
-                </button>
-                <button
-                    type="button"
-                    @click.prevent="reject(3)"
-                    class="btn btn-md btn-red"
-                    v-if="
-                        (pelatihan.status_id == 2 ||
-                            pelatihan.status_id == 5) &&
-                        hasRolesID([pelatihan.status.role_id])
-                    "
-                >
-                    <XMarkIcon class="h-5 w-5 mr-2" /> Reject Pelatihan
-                </button>
-                <div
-                    v-if="
-                        pelatihan.status_id == 4 &&
-                        hasRolesID([pelatihan.status.role_id])
-                    "
-                >
+                <div v-if="pelatihan.is_publish">
                     <button
                         type="button"
-                        @click.prevent="approve"
-                        class="btn btn-md btn-sky"
+                        @click.prevent="submit(pelatihan.status.next_id)"
+                        class="btn btn-md btn-teal"
+                        v-if="
+                            (pelatihan.status_id == 1 ||
+                                pelatihan.status_id == 3) &&
+                            hasRolesID([pelatihan.status.role_id])
+                        "
                     >
-                        <CheckIcon class="h-5 w-5 mr-2" /> Approve Pelatihan
+                        <PaperAirplaneIcon class="h-5 w-5 mr-2" /> Submit
+                        Pelatihan
                     </button>
                     <button
                         type="button"
-                        @click.prevent="reject(5)"
-                        class="btn btn-md btn-red ml-1"
+                        @click.prevent="reject(pelatihan.status.prev_id)"
+                        class="btn btn-md btn-red"
+                        v-if="
+                            (pelatihan.status_id == 2 ||
+                                pelatihan.status_id == 5) &&
+                            hasRolesID([pelatihan.status.role_id])
+                        "
                     >
                         <XMarkIcon class="h-5 w-5 mr-2" /> Reject Pelatihan
                     </button>
-                </div>
-                <div
-                    v-if="
-                        pelatihan.status_id == 6 &&
-                        hasRolesID([pelatihan.status.role_id])
-                    "
-                >
-                    <button
-                        type="button"
-                        @click.prevent="lanjutkan"
-                        class="btn btn-md btn-sky"
+                    <div
+                        v-if="
+                            pelatihan.status_id == 4 &&
+                            hasRolesID([pelatihan.status.role_id])
+                        "
                     >
-                        <CheckIcon class="h-5 w-5 mr-2" /> Lanjutkan Pelatihan
-                    </button>
-                    <button
-                        v-if="peserta.total < pelatihan.kuota"
-                        type="button"
-                        @click.prevent="batalkan"
-                        class="btn btn-md btn-red ml-1"
+                        <button
+                            type="button"
+                            @click.prevent="approve(pelatihan.status.next_id)"
+                            class="btn btn-md btn-sky"
+                        >
+                            <CheckIcon class="h-5 w-5 mr-2" /> Approve Pelatihan
+                        </button>
+                        <button
+                            type="button"
+                            @click.prevent="reject(pelatihan.status.prev_id)"
+                            class="btn btn-md btn-red ml-1"
+                        >
+                            <XMarkIcon class="h-5 w-5 mr-2" /> Reject Pelatihan
+                        </button>
+                    </div>
+                    <div
+                        v-if="
+                            pelatihan.status_id == 6 &&
+                            hasRolesID([pelatihan.status.role_id])
+                        "
                     >
-                        <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan Pelatihan
+                        <button
+                            type="button"
+                            @click.prevent="batasKonfirmasi()"
+                            class="btn btn-md btn-sky"
+                        >
+                            <CheckIcon class="h-5 w-5 mr-2" /> Lanjutkan
+                            Pelatihan
+                        </button>
+                        <button
+                            v-if="peserta.total < pelatihan.kuota"
+                            type="button"
+                            @click.prevent="batalkan"
+                            class="btn btn-md btn-red ml-1"
+                        >
+                            <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan
+                            Pelatihan
+                        </button>
+                    </div>
+                    <button
+                        v-if="pelatihan.status_id == 7"
+                        type="button"
+                        @click.prevent="ubahTanggal"
+                        class="btn btn-md btn-yellow ml-1"
+                    >
+                        <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal
+                        Pendaftaran
                     </button>
+                    <div
+                        v-if="
+                            (pelatihan.status_id == 8 ||
+                                pelatihan.status_id == 10) &&
+                            hasRolesID([pelatihan.status.role_id]) &&
+                            new Date(today).getTime() >
+                                new Date(pelatihan.batas_konfirmasi).getTime()
+                        "
+                    >
+                        <button
+                            type="button"
+                            @click.prevent="submit(pelatihan.status.next_id)"
+                            class="btn btn-md btn-sky"
+                        >
+                            <CheckIcon class="h-5 w-5 mr-2" /> Lanjutkan
+                            Pelatihan
+                        </button>
+
+                        <button
+                            v-if="pelatihan.kuota > confirmed.approved"
+                            type="button"
+                            @click.prevent="batasKonfirmasi()"
+                            class="btn btn-md btn-yellow ml-1"
+                        >
+                            <PencilSquareIcon class="h-5 w-5 mr-2" /> Batas
+                            Konfirmasi
+                        </button>
+                    </div>
+                    <div
+                        v-if="
+                            (pelatihan.status_id == 9 ||
+                                pelatihan.status_id == 11 ||
+                                pelatihan.status_id == 12) &&
+                            hasRolesID([pelatihan.status.role_id])
+                        "
+                    >
+                        <button
+                            type="button"
+                            @click.prevent="approve(pelatihan.status.next_id)"
+                            class="btn btn-md btn-sky"
+                        >
+                            <CheckIcon class="h-5 w-5 mr-2" /> Approve Pelatihan
+                        </button>
+                        <button
+                            type="button"
+                            @click.prevent="reject(pelatihan.status.prev_id)"
+                            class="btn btn-md btn-red ml-1"
+                        >
+                            <XMarkIcon class="h-5 w-5 mr-2" /> Reject Pelatihan
+                        </button>
+                    </div>
                 </div>
-                <button
-                    v-if="pelatihan.status_id == 7"
-                    type="button"
-                    @click.prevent="ubahTanggal"
-                    class="btn btn-md btn-yellow ml-1"
-                >
-                    <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal
-                    Pendaftaran
-                </button>
             </div>
+
             <div class="bg-white shadow rounded-lg border-t-2 border-sky-500">
                 <div class="p-3 border-b">
                     <h2
@@ -123,8 +180,35 @@
                         <NewspaperIcon class="h-6 w-6 mr-2" />Katalog Penilaian
                     </h2>
                 </div>
-                <div class="overflow-auto">
-                    <table class="min-w-full p-3">
+                <div class="overflow-auto pb-3">
+                    <table class="min-w-full">
+                        <tr>
+                            <td
+                                class="pl-6 pr-3 align-top py-2 bg-gray-50 whitespace-nowrap"
+                            >
+                                Jenis Pelatihan
+                            </td>
+                            <td class="td bg-gray-50">:</td>
+                            <td
+                                class="pl-3 pr-6 py-2 align-top bg-gray-50 text-justify"
+                            >
+                                Pelatihan
+                                {{ ucfirst(pelatihan.jenis_pelatihan) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                class="pl-6 pr-3 align-top py-2 bg-gray-50 whitespace-nowrap"
+                            >
+                                Keterangan Jabatan
+                            </td>
+                            <td class="td bg-gray-50">:</td>
+                            <td
+                                class="pl-3 pr-6 py-2 align-top bg-gray-50 text-justify"
+                            >
+                                {{ pelatihan.ket_jabatan }}
+                            </td>
+                        </tr>
                         <tr>
                             <td
                                 class="pl-6 pr-3 align-top py-2 bg-gray-50 whitespace-nowrap"
@@ -271,19 +355,23 @@
                                 <span
                                     class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow"
                                     :class="{
-                                        'bg-yellow-200 text-yellow-900  shadow-yellow-500':
-                                            pelatihan.status_id == 1,
                                         'bg-sky-200 text-sky-900 shadow-sky-500':
+                                            pelatihan.status_id == 1,
+                                        'bg-yellow-200 text-yellow-900  shadow-yellow-500':
                                             pelatihan.status_id == 2 ||
                                             pelatihan.status_id == 4 ||
-                                            pelatihan.status_id == 8,
+                                            pelatihan.status_id == 6 ||
+                                            pelatihan.status_id == 8 ||
+                                            pelatihan.status_id == 9 ||
+                                            pelatihan.status_id == 11,
                                         'bg-red-200 text-red-900 shadow-red-500':
                                             pelatihan.status_id == 3 ||
                                             pelatihan.status_id == 5 ||
                                             pelatihan.status_id == 7 ||
-                                            pelatihan.status_id == 9,
+                                            pelatihan.status_id == 10 ||
+                                            pelatihan.status_id == 12,
                                         'bg-teal-200 text-teal-900 shadow-teal-500':
-                                            pelatihan.status_id == 6,
+                                            pelatihan.status_id == 13,
                                     }"
                                     >{{ pelatihan.status.name }}</span
                                 >
@@ -292,7 +380,10 @@
                         <tr
                             v-if="
                                 pelatihan.status_id == 3 ||
-                                pelatihan.status_id == 5
+                                pelatihan.status_id == 5 ||
+                                pelatihan.status_id == 7 ||
+                                pelatihan.status_id == 10 ||
+                                pelatihan.status_id == 12
                             "
                         >
                             <td
@@ -305,7 +396,7 @@
                                 {{ pelatihan.keterangan }}
                             </td>
                         </tr>
-                        <tr v-if="pelatihan.bahan">
+                        <tr v-if="pelatihan.bahan.length > 0">
                             <td
                                 class="pl-6 pr-3 align-top py-2 bg-gray-50 whitespace-nowrap"
                             >
@@ -357,15 +448,23 @@
                             >
                                 <td class="td">{{ item.jabatan.jabatan }}</td>
                                 <td class="td">:</td>
-                                <td>
-                                    <input
-                                        v-model="form[item.kd_jabatan]"
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        class="f-input px-2"
-                                        required
-                                    />
+                                <td class="whitespace-nowrap">
+                                    <div
+                                        class="border flex items-center rounded border-gray-300"
+                                    >
+                                        <input
+                                            v-model="form[item.kd_jabatan]"
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            class="focus:ring-sky-300 py-1.5 focus:border-sky-400 w-full border-0 rounded-l sm:text-sm border-gray-300 px-2"
+                                            required
+                                        />
+                                        <span
+                                            class="position-absolute right-0 px-2 py-1.5 border-l-0 rounded-r sm:text-sm border-gray-300"
+                                            >%</span
+                                        >
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
@@ -374,14 +473,22 @@
                                 </td>
                                 <td class="td">:</td>
                                 <td>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        v-model="form.ikut_pelatihan"
-                                        class="f-input px-2"
-                                        required
-                                    />
+                                    <div
+                                        class="border flex items-center rounded border-gray-300"
+                                    >
+                                        <input
+                                            v-model="form.ikut_pelatihan"
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            class="focus:ring-sky-300 py-1.5 focus:border-sky-400 w-full border-0 rounded-l sm:text-sm border-gray-300 px-2"
+                                            required
+                                        />
+                                        <span
+                                            class="position-absolute right-0 px-2 py-1.5 border-l-0 rounded-r sm:text-sm border-gray-300"
+                                            >%</span
+                                        >
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
@@ -390,26 +497,24 @@
                                 </td>
                                 <td class="td">:</td>
                                 <td>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        v-model="form.tidak_pelatihan"
-                                        class="f-input px-2"
-                                        required
-                                    />
+                                    <div
+                                        class="border flex items-center rounded border-gray-300"
+                                    >
+                                        <input
+                                            v-model="form.tidak_pelatihan"
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            class="focus:ring-sky-300 py-1.5 focus:border-sky-400 w-full border-0 rounded-l sm:text-sm border-gray-300 px-2"
+                                            required
+                                        />
+                                        <span
+                                            class="position-absolute right-0 px-2 py-1.5 border-l-0 rounded-r sm:text-sm border-gray-300"
+                                            >%</span
+                                        >
+                                    </div>
                                 </td>
                             </tr>
-                            <!-- <tr>
-                                <td class="td">
-                                    Jumlah Bobot
-                                    <i class="text-xs text-red-500"
-                                        >(Max:100)</i
-                                    >
-                                </td>
-                                <td class="td">:</td>
-                                <td class="td">{{ jumlah_bobot }}</td>
-                            </tr> -->
                         </table>
                     </div>
                     <div
@@ -438,7 +543,7 @@
             </div>
             <div
                 class="bg-white shadow rounded-lg mt-3 border-t-2 border-sky-500"
-                v-if="pelatihan.status_id == 4 || pelatihan.status_id == 6"
+                v-if="pelatihan.status_id == 4 || pelatihan.status_id > 5"
             >
                 <div class="p-3 border-b">
                     <h2
@@ -486,11 +591,7 @@
                                 </td>
                                 <td class="td text-right">{{ item.bobot }}</td>
                                 <td class="pl-3 pr-6 py-2 align-top text-right">
-                                    {{
-                                        item.jabatan
-                                            ? item.jabatan.peserta.length
-                                            : riwayat[item.key]
-                                    }}
+                                    {{ riwayat[item.key] }}
                                     Orang
                                 </td>
                             </tr>
@@ -500,7 +601,7 @@
             </div>
             <div
                 class="bg-white shadow rounded-lg mt-3 border-t-2 border-sky-500"
-                v-if="pelatihan.status_id > 5"
+                v-if="pelatihan.status_id == 4 || pelatihan.status_id > 5"
             >
                 <div class="p-3 border-b">
                     <h2
@@ -535,7 +636,7 @@
                             <span
                                 class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-sky-50 text-gray-500 text-sm"
                             >
-                                Status
+                                Status Peserta
                             </span>
 
                             <select
@@ -549,6 +650,27 @@
                                 </option>
                                 <option value="no">
                                     Belum Pernah Mengikuti Pelatihan
+                                </option>
+                            </select>
+                        </div>
+                        <div class="rounded-md flex pt-3 sm:pt-0 sm:ml-3">
+                            <span
+                                class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-sky-50 text-gray-500 text-sm"
+                            >
+                                Status Pendaftaran
+                            </span>
+
+                            <select
+                                @change.prevent="filters"
+                                class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none rounded-r-md sm:text-sm border-gray-300"
+                                v-model="filter.confirmed"
+                            >
+                                <option value="">Semua</option>
+                                <option value="approved">Disetujui</option>
+                                <option value="confirmed">Dikonfirmasi</option>
+                                <option value="rejected">Ditolak</option>
+                                <option value="waiting">
+                                    Belum Dikonfirmasi
                                 </option>
                             </select>
                         </div>
@@ -569,7 +691,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="overflow-auto pb-3">
+                <div class="overflow-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -590,9 +712,32 @@
                                 >
                                     Pernah Mengikuti Pelatihan
                                 </th>
+                                <th
+                                    scope="col"
+                                    class="text-center th"
+                                    v-if="pelatihan.status_id > 7"
+                                >
+                                    Status
+                                </th>
+                                <th
+                                    v-if="pelatihan.status_id > 7"
+                                    scope="col"
+                                    class="pl-3 pr-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right"
+                                >
+                                    Jumlah Bobot
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td
+                                    v-if="peserta.total == 0"
+                                    class="td text-center"
+                                    colspan="7"
+                                >
+                                    Kosong
+                                </td>
+                            </tr>
                             <tr
                                 v-for="(item, index) in peserta.data"
                                 :key="index"
@@ -610,18 +755,118 @@
                                 </td>
                                 <td class="td">{{ item.nama_lengkap }}</td>
                                 <td class="td">{{ item.jabatan.jabatan }}</td>
+
                                 <td class="pl-3 pr-6 py-2 align-top">
                                     <CheckIcon
                                         class="h-6 w-6 text-teal-500 mx-auto"
-                                        v-if="item.riwayat_pelatihan.length > 0"
+                                        v-if="item.riwayat_pelatihan_count > 0"
                                     />
                                     <XMarkIcon
                                         class="h-6 w-6 text-rose-500 mx-auto"
                                         v-else
                                     />
                                 </td>
+                                <td
+                                    class="td text-center whitespace-nowrap"
+                                    v-if="pelatihan.status_id > 7"
+                                >
+                                    <span
+                                        class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-teal-200 text-teal-900 shadow-teal-500"
+                                        v-if="
+                                            item.pendaftaran[0].approved_at !=
+                                            null
+                                        "
+                                    >
+                                        Disetujui </span
+                                    ><span
+                                        class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-sky-200 text-sky-900 shadow-sky-500"
+                                        v-else-if="
+                                            item.pendaftaran[0].confirmed_at !=
+                                            null
+                                        "
+                                    >
+                                        Dikonfirmasi
+                                    </span>
+                                    <span
+                                        class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-red-200 text-red-900 shadow-red-500"
+                                        v-else-if="
+                                            item.pendaftaran[0].rejected_at !=
+                                            null
+                                        "
+                                    >
+                                        Ditolak </span
+                                    ><span
+                                        class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-yellow-200 text-yellow-900 shadow-yellow-500"
+                                        v-else
+                                    >
+                                        Belum Dikonfirmasi
+                                    </span>
+                                </td>
+                                <td
+                                    class="pl-3 pr-6 py-2 align-top text-right"
+                                    v-if="pelatihan.status_id > 7"
+                                >
+                                    {{
+                                        item.pendaftaran.length > 0
+                                            ? item.pendaftaran[0].jumlah_bobot
+                                            : "-"
+                                    }}
+                                </td>
                             </tr>
                         </tbody>
+                        <tfoot
+                            class="bg-gray-50 divide-y divide-gray-200"
+                            v-if="pelatihan.status_id > 7"
+                        >
+                            <tr>
+                                <td
+                                    class="pl-6 pr-3 py-2 align-top"
+                                    colspan="6"
+                                >
+                                    Jumlah Pendaftaran yang Disetujui
+                                </td>
+
+                                <td class="pl-3 pr-6 py-2 align-top text-right">
+                                    {{ confirmed.approved }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    class="pl-6 pr-3 py-2 align-top"
+                                    colspan="6"
+                                >
+                                    Jumlah Pendaftaran yang Dikonfirmasi
+                                </td>
+
+                                <td class="pl-3 pr-6 py-2 align-top text-right">
+                                    {{ confirmed.confirmed }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    class="pl-6 pr-3 py-2 align-top"
+                                    colspan="6"
+                                >
+                                    Jumlah Pendaftaran yang Ditolak
+                                </td>
+
+                                <td class="pl-3 pr-6 py-2 align-top text-right">
+                                    {{ confirmed.rejected }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    class="pl-6 pr-3 py-2 align-top"
+                                    colspan="6"
+                                >
+                                    Jumlah Pendaftaran yang Belum Dikonfirmasi
+                                </td>
+
+                                <td class="pl-3 pr-6 py-2 align-top text-right">
+                                    {{ confirmed.waiting }}
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
                 <div
@@ -631,7 +876,10 @@
                         Menampilkan {{ peserta.data.length }} dari
                         {{ peserta.total }} Data
                     </div>
-                    <Pagination :links="peserta.links" />
+                    <Pagination
+                        :links="peserta.links"
+                        :only="['peserta', 'filter']"
+                    />
                 </div>
             </div>
         </div>
@@ -689,6 +937,7 @@ export default defineComponent({
         riwayat: Object,
         filter: Object,
         peserta: Object,
+        confirmed: Object,
     },
 
     data() {
@@ -707,10 +956,19 @@ export default defineComponent({
         }
 
         fields["status_id"] = this.pelatihan.status_id;
+
+        let curr_date = new Date();
+
         return {
             jumlah_bobot: jumlah_bobot,
             form: this.$inertia.form(fields),
-            // formData: fields,
+            curr_date: curr_date,
+            today:
+                curr_date.getFullYear() +
+                "/" +
+                (curr_date.getMonth() + 1) +
+                "/" +
+                curr_date.getDate(),
             bulan: [
                 "Januari",
                 "Februari",
@@ -763,16 +1021,7 @@ export default defineComponent({
             }
             return result;
         },
-        // jumlahBobot() {
-        //     let jumlah = 0;
-        //     Object.keys(this.formData).forEach((item) => {
-        //         if (item != "status_id") {
-        //             jumlah = jumlah + this.form[item];
-        //         }
-        //     });
-        //     this.jumlah_bobot = jumlah;
-        // },
-        submit() {
+        submit(status) {
             Swal.fire({
                 text: "Apakah anda yakin akan mengirim data pelatihan ini?",
                 icon: "question",
@@ -786,7 +1035,7 @@ export default defineComponent({
                     this.$inertia.post(
                         this.route("pelatihan.process", this.pelatihan.slug),
                         {
-                            status_id: 2,
+                            status_id: status,
                         },
                         { only: ["pelatihan", "flash", "errors"] }
                     );
@@ -807,7 +1056,13 @@ export default defineComponent({
                     this.form.post(
                         this.route("bobot.store", this.pelatihan.slug),
                         {
-                            only: ["pelatihan", "flash", "errors"],
+                            only: [
+                                "pelatihan",
+                                "flash",
+                                "errors",
+                                "riwayat",
+                                "peserta",
+                            ],
                         }
                     );
                 }
@@ -865,7 +1120,7 @@ export default defineComponent({
                 }
             });
         },
-        approve() {
+        approve(status) {
             Swal.fire({
                 text: "Apakah anda yakin akan menyetujui data pelatihan ini?",
                 icon: "question",
@@ -879,9 +1134,9 @@ export default defineComponent({
                     this.$inertia.post(
                         this.route("pelatihan.process", this.pelatihan.slug),
                         {
-                            status_id: 6,
+                            status_id: status,
                         },
-                        { only: ["pelatihan", "flash", "errors"] }
+                        { only: ["pelatihan", "peserta", "flash", "errors"] }
                     );
                 }
             });
@@ -897,23 +1152,30 @@ export default defineComponent({
                 }
             );
         },
-        lanjutkan() {
+        batasKonfirmasi() {
+            let today = this.today;
             Swal.fire({
                 title: "Batas Waktu Konfirmasi",
                 html: '<input type="date" class="focus:ring-sky-300 focus:border-sky-400 w-full rounded-lg text-xl border-gray-300 px-6 py-3" id="batas-konfirmasi">',
                 stopKeydownPropagation: false,
                 showCancelButton: true,
+                confirmButtonText: "Lanjutkan",
+                cancelButtonText: "Tutup",
                 confirmButtonColor: "#0ea5e9",
                 cancelButtonColor: "#ef4444",
-                confirmButtonColor: "#ef4444",
-                cancelButtonColor: "#6b7280",
                 preConfirm: function () {
                     let batas =
                         document.getElementById("batas-konfirmasi").value;
 
-                    if (new Date(batas).getTime() < new Date().getTime()) {
+                    if (!batas) {
                         Swal.showValidationMessage(
-                            "Tanggal tidak boleh lebih atau sama dengan tanggal hari ini"
+                            "Silahkan mengisi batas konfirmasi terlebih dahulu"
+                        );
+                    } else if (
+                        new Date(batas).getTime() < new Date(today).getTime()
+                    ) {
+                        Swal.showValidationMessage(
+                            "Batas konfirmasi sudah berlalu"
                         );
                     } else {
                         return batas;
@@ -923,7 +1185,7 @@ export default defineComponent({
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        text: "Apakah anda yakin akan membatalkan pelatihan ini ?",
+                        text: "Apakah anda yakin akan menyimpan pelatihan ini ?",
                         icon: "question",
                         confirmButtonText: "Ya, Lanjutkan",
                         cancelButtonText: "Batalkan",
@@ -942,7 +1204,12 @@ export default defineComponent({
                                     batas_konfirmasi: result.value,
                                 },
                                 {
-                                    only: ["flash", "pelatihan"],
+                                    only: [
+                                        "flash",
+                                        "pelatihan",
+                                        "peserta",
+                                        "confirmed",
+                                    ],
                                 }
                             );
                         }
@@ -1020,11 +1287,11 @@ export default defineComponent({
                     ).value;
 
                     if (
-                        new Date(mulai_pendaftaran).getTime() >
+                        new Date(mulai_pendaftaran).getTime() >=
                         new Date(selesai_pendaftaran).getTime()
                     ) {
                         Swal.showValidationMessage(
-                            "Tanggal mulai pelatihan tidak boleh lebih atau sama dengan tanggal selesai pelatihan"
+                            "Tanggal mulai pelatihan tidak boleh lebih besar dari tanggal selesai pelatihan"
                         );
                     } else {
                         return {
@@ -1066,6 +1333,9 @@ export default defineComponent({
                     });
                 }
             });
+        },
+        ucfirst(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
         },
     },
 });

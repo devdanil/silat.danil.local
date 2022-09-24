@@ -22,8 +22,7 @@ class BobotController extends Controller
             $temp = ['pelatihan_id' => $pelatihan->id, 'key' => $key, 'bobot' => $value];
             BobotPelatihan::create($temp);
         }
-
-        event(new ProcessPelatihan($pelatihan,  $status_id, null));
+        event(new ProcessPelatihan($pelatihan,  ['status_id' => $status_id], null));
 
         $request->session()->flash('flash.msg', $status_id == 2 ? "Data berhasil disimpan!" : $status->flash);
         $request->session()->flash('flash.error', false);

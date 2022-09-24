@@ -7,8 +7,10 @@ use App\Events\ProcessPelatihan;
 use App\Http\Requests\StorePelatihanRequest;
 use App\Models\Jabatan;
 use App\Models\Pelatihan;
+use App\Models\Pendaftaran;
 use App\Models\Peserta;
 use App\Models\Status;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -63,23 +65,28 @@ class PelatihanController extends Controller
     public function show(Pelatihan $pelatihan, Request $request)
     {
         $data['title'] = "Detail Pelatihan";
-        $data['pelatihan'] = $pelatihan->load(['jabatan.jabatan',  'bahan',  'bobot.jabatan.peserta', 'status']);
-        $data['riwayat']['ikut_pelatihan'] = in_array($pelatihan->status_id, [1, 2, 3, 5]) ? 0 : Peserta::whereIn('kd_jabatan', $pelatihan->bobot->pluck('key')->all())->whereHas('riwayatPelatihan', function ($query) {
-            $query->where('jenis_pelatihan', 'fungsional');
+        $data['pelatihan'] = $pelatihan->load(['jabatan.jabatan',  'bahan',  'bobot.jabatan', 'status']);
+        $data['jabatan'] = Jabatan::select('kd_jabatan')->whereIn('kd_jabatan', $pelatihan->jabatan()->pluck('kd_jabatan'))->withCount('peserta')->get();
+        $data['riwayat'] = [];
+        foreach ($data['jabatan'] as $key) {
+            $data['riwayat'][$key->kd_jabatan] = $key->peserta_count;
+        }
+        $data['riwayat']['ikut_pelatihan'] = in_array($pelatihan->status_id, [1, 2, 3, 5]) ? 0 : Peserta::whereIn('kd_jabatan', $pelatihan->bobot->pluck('key')->all())->whereHas('riwayatPelatihan', function ($query) use ($pelatihan) {
+            $query->where('jenis_pelatihan', $pelatihan->jenis_pelatihan);
         })->count();
 
-        $data['riwayat']['tidak_pelatihan'] = in_array($pelatihan->status_id, [1, 2, 3, 5]) ? 0 : Peserta::whereIn('kd_jabatan', $pelatihan->bobot->pluck('key')->all())->whereDoesntHave('riwayatPelatihan', function ($query) {
-            $query->where('jenis_pelatihan', 'fungsional');
+        $data['riwayat']['tidak_pelatihan'] = in_array($pelatihan->status_id, [1, 2, 3, 5]) ? 0 : Peserta::whereIn('kd_jabatan', $pelatihan->bobot->pluck('key')->all())->whereDoesntHave('riwayatPelatihan', function ($query) use ($pelatihan) {
+            $query->where('jenis_pelatihan', $pelatihan->jenis_pelatihan);
         })->count();
-
 
         $search = $request->get('search');
         $data['filter'] = [
             'limit' => $request->get('limit') ?? 10,
             'search' => $search,
-            'new' => $request->get('new') ?? ""
+            'new' => $request->get('new') ?? "",
+            'confirmed' => $request->get('confirmed') ?? ""
         ];
-        $data['peserta'] = $pelatihan->status_id > 5 ? Peserta::select('nip', 'nama_lengkap', 'kd_jabatan')->whereIn('kd_jabatan', $pelatihan->bobot->pluck('key')->all())->when($search, function ($query) use ($search) {
+        $data['peserta'] = $pelatihan->status_id == 4 || $pelatihan->status_id > 5 ? Peserta::select('nip', 'nama_lengkap', 'kd_jabatan')->whereIn('kd_jabatan', $pelatihan->bobot->pluck('key')->all())->when($search, function ($query) use ($search) {
             $query->where('nama_lengkap', 'like', '%' . $search . '%')->orWhere('nip', 'like', '%' . $search . '%')->orWhereHas('jabatan', function ($query2) use ($search) {
                 $query2->where('jabatan', 'like', '%' . $search . '%');
             });
@@ -91,9 +98,37 @@ class PelatihanController extends Controller
             $query->whereDoesntHave('riwayatPelatihan', function ($query) {
                 $query->where('jenis_pelatihan', 'fungsional');
             });
-        })->with('riwayatPelatihan', function ($query) {
-            $query->where('jenis_pelatihan', 'fungsional');
+        })->when($data['filter']['confirmed'] == "approved", function ($query) {
+            $query->whereHas('pendaftaran', function ($query) {
+                $query->where('confirmed_at', "!=", NULL);
+                $query->where('rejected_at', NULL);
+            });
+        })->when($data['filter']['confirmed'] == "approved", function ($query) {
+            $query->whereHas('pendaftaran', function ($query) {
+                $query->where('confirmed_at', "!=", NULL);
+                $query->where('approved_at', "!=", NULL);
+                $query->where('rejected_at', NULL);
+            });
+        })->when($data['filter']['confirmed'] == "confirmed", function ($query) {
+            $query->whereHas('pendaftaran', function ($query) {
+                $query->where('confirmed_at', "!=", NULL);
+                $query->where('rejected_at', NULL);
+            });
+        })->when($data['filter']['confirmed'] == "waiting", function ($query) {
+            $query->whereHas('pendaftaran', function ($query) {
+                $query->where('confirmed_at', NULL);
+                $query->where('rejected_at', NULL);
+            });
+        })->withCount(['riwayatPelatihan' => function (Builder $query) use ($pelatihan) {
+            $query->where('jenis_pelatihan', $pelatihan->jenis_pelatihan);
+        }])->with('pendaftaran', function ($query) use ($pelatihan) {
+            $query->where('pelatihan_id', $pelatihan->id);
         })->with('jabatan')->orderBy('nama_lengkap', 'ASC')->paginate($data['filter']['limit'])->appends($data['filter']) : [];
+
+        $data['confirmed']['approved'] = $pelatihan->status_id > 7 ? Pendaftaran::where('approved_at', '!=', null)->count() : 0;
+        $data['confirmed']['confirmed'] = $pelatihan->status_id > 7 ? Pendaftaran::where('confirmed_at', '!=', null)->where('approved_at', null)->count() : 0;
+        $data['confirmed']['rejected'] = $pelatihan->status_id > 7 ? Pendaftaran::where('confirmed_at',  null)->where('rejected_at', '!=', null)->count() : 0;
+        $data['confirmed']['waiting'] = $pelatihan->status_id > 7 ? Pendaftaran::where('confirmed_at', null)->where('rejected_at', null)->orWhere('confirmed_at', '!=', null)->where('rejected_at', '!=', null)->count() : 0;
         return Inertia::render('Pelatihan/Show', $data);
     }
 

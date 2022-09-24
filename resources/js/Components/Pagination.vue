@@ -16,6 +16,7 @@
                 :disabled="link.active"
                 :href="link.url"
                 v-html="link.label"
+                :only="only"
                 preserve-scroll
             />
         </template>
@@ -27,6 +28,7 @@ import { Link } from "@inertiajs/inertia-vue3";
 export default defineComponent({
     props: {
         links: Array,
+        only: Array,
     },
     components: {
         Link,

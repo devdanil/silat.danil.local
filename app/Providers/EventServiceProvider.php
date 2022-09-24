@@ -6,6 +6,7 @@ use App\Events\CreatePelatihan;
 use App\Events\ProcessPelatihan;
 use App\Listeners\StoreJabatan;
 use App\Listeners\StoreLogPelatihan;
+use App\Listeners\StorePendaftaran;
 use App\Listeners\UpdateStatusPelatihan;
 use App\Listeners\UploadBahan;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,6 +28,7 @@ class EventServiceProvider extends ServiceProvider
         ProcessPelatihan::class => [
             UpdateStatusPelatihan::class,
             StoreLogPelatihan::class,
+            StorePendaftaran::class,
         ]
     ];
 
