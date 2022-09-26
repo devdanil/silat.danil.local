@@ -206,7 +206,19 @@
                             <td
                                 class="pl-3 pr-6 py-2 align-top bg-gray-50 text-justify"
                             >
-                                {{ pelatihan.ket_jabatan }}
+                                <span
+                                    v-for="(item, index) in JSON.parse(
+                                        pelatihan.ket_jabatan
+                                    )"
+                                    :key="index"
+                                    >{{
+                                        item +
+                                        (index + 1 <
+                                        JSON.parse(pelatihan.ket_jabatan).length
+                                            ? ", "
+                                            : ".")
+                                    }}</span
+                                >
                             </td>
                         </tr>
                         <tr>

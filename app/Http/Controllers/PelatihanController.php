@@ -53,6 +53,7 @@ class PelatihanController extends Controller
         $data = $request->safe()->except(['file_bahan', 'kd_jabatan']);
         $slug = Str::slug($data['judul']);
         $data['slug'] = Pelatihan::where('slug', $slug)->count() > 0 ? $slug . '-' . Str::random(1) : $slug;
+        $data['ket_jabatan'] = json_encode($data['ket_jabatan']);
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
         $pelatihan = Pelatihan::create($data);

@@ -55,30 +55,32 @@
                                 </option>
                             </select>
                         </div>
-                        <div v-if="form.jenis_pelatihan == 'fungsional'">
+                        <div
+                            v-if="form.jenis_pelatihan == 'fungsional'"
+                            class="sm:flex items-start"
+                        >
                             <label
-                                class="block text-sm font-medium text-gray-700 mb-1"
+                                class="text-sm font-medium text-gray-700 mb-1 mr-3"
                             >
                                 Keterangan Jabatan<i class="text-red-500 tex-xs"
                                     >*</i
                                 >
                             </label>
-                            <select
-                                v-model="form.ket_jabatan"
-                                class="f-input px-2"
-                                required
-                            >
-                                <option value="">Pilih</option>
-                                <option value="Penyetaraan">Penyetaraan</option>
-                                <option value="Inpassing">Inpassing</option>
-
-                                <option value="Pengangkatan Pertama">
-                                    Pengangkatan Pertama
-                                </option>
-                                <option value="Perpindahan JF">
-                                    Perpindahan JF
-                                </option>
-                            </select>
+                            <div class="text-sm text-gray-700">
+                                <div
+                                    class="flex items-start"
+                                    v-for="(item, index) in ket_jabatan"
+                                    :key="index"
+                                >
+                                    <Checkbox
+                                        :id="'ket_jabatan' + index"
+                                        class="mr-2 mt-1"
+                                        v-model:checked="form.ket_jabatan"
+                                        :value="item"
+                                    />
+                                    {{ item }}
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label
@@ -493,7 +495,7 @@ export default defineComponent({
                 is_publish: this.pelatihan.is_publish,
                 status_id: this.pelatihan.status_id,
                 jenis_pelatihan: this.pelatihan.jenis_pelatihan,
-                ket_jabatan: this.pelatihan.ket_jabatan,
+                ket_jabatan: JSON.parse(this.pelatihan.ket_jabatan),
                 instansi: this.pelatihan.instansi,
             }),
             editor: ClassicEditor,
@@ -501,6 +503,12 @@ export default defineComponent({
                 extraPlugins: [this.UploadAdapterPlugin],
             },
             counters: this.pelatihan.bahan.length > 0 ? [] : [0],
+            ket_jabatan: [
+                "Penyetaraan",
+                "Inpassing",
+                "Pengangkatan Pertama",
+                "Perpindahan JF",
+            ],
         };
     },
 

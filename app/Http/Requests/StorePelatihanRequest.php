@@ -26,7 +26,7 @@ class StorePelatihanRequest extends FormRequest
         return [
             'judul' => ['required', 'max:255'],
             'jenis_pelatihan' => ['required', 'max:50'],
-            'ket_jabatan' => ['required_if:jenis_pelatihan,fungsional', 'max:50'],
+            'ket_jabatan' => ['required_if:jenis_pelatihan,fungsional', 'array', 'max:50'],
             'instansi' => ['required', 'max:50'],
             'deskripsi' => ['required'],
             'silabus' => ['required'],
