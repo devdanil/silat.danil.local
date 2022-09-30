@@ -2,19 +2,18 @@
 
 namespace App\Listeners;
 
-use App\Events\CreatePelatihan;
-use App\Models\JabatanPelatihan;
+use App\Models\KatalogJabatan;
 
 class StoreJabatan
 {
 
-    public function handle(CreatePelatihan $event)
+    public function handle($event)
     {
-        JabatanPelatihan::where('pelatihan_id', $event->pelatihan->id)->delete();
+        KatalogJabatan::where('katalog_id', $event->katalog->id)->delete();
         $data = [];
         foreach ($event->jabatan as $key => $value) {
-            $data[] = ['pelatihan_id' => $event->pelatihan->id, 'kd_jabatan' => $value];
+            $data[] = ['katalog_id' => $event->katalog->id, 'kd_jabatan' => $value];
         }
-        JabatanPelatihan::insert($data);
+        KatalogJabatan::insert($data);
     }
 }

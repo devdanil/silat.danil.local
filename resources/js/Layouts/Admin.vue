@@ -153,13 +153,6 @@
                         }"
                         >{{ menu.name }}</span
                     >
-                    <div class="ml-auto" v-if="$page.props.all_notif > 0">
-                        <span
-                            v-if="menu.route == 'notifications.index'"
-                            class="px-1 bg-red-500 rounded-full text-sm font-semibold animate-ping"
-                            >{{ $page.props.all_notif }}</span
-                        >
-                    </div>
                 </SideLink>
                 <a
                     v-if="menu.childs.length > 0"
@@ -279,7 +272,6 @@ import { Link, Head } from "@inertiajs/inertia-vue3";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import SideLink from "@/Components/SideLink.vue";
-import Banner from "@/Components/Banner.vue";
 import {
     Bars3Icon,
     HomeIcon,
@@ -303,7 +295,6 @@ export default defineComponent({
         DropdownLink,
         Head,
         SideLink,
-        Banner,
         UserIcon,
         CheckCircleIcon,
     },

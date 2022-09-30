@@ -19,7 +19,7 @@
                 <div class="text-xl">Draft Pelatihan</div>
                 <div class="flex justify-between align-middle">
                     <BellIcon class="h-10 w-10" />
-                    <div class="text-2xl">{{ count_new }}</div>
+                    <div class="text-2xl">{{ count.new }}</div>
                 </div>
             </div>
 
@@ -29,7 +29,7 @@
                 <div class="text-xl">Pelatihan Diproses</div>
                 <div class="flex justify-between align-middle">
                     <ClockIcon class="h-10 w-10" />
-                    <div class="text-2xl">{{ count_progress }}</div>
+                    <div class="text-2xl">{{ count.progress }}</div>
                 </div>
             </div>
             <div
@@ -38,7 +38,7 @@
                 <div class="text-xl">Pelatihan Selesai</div>
                 <div class="flex justify-between align-middle">
                     <CheckBadgeIcon class="h-10 w-10" />
-                    <div class="text-2xl">{{ count_success }}</div>
+                    <div class="text-2xl">{{ count.success }}</div>
                 </div>
             </div>
             <div
@@ -47,7 +47,7 @@
                 <div class="text-xl">Pelatihan Ditolak</div>
                 <div class="flex justify-between align-middle">
                     <InformationCircleIcon class="h-10 w-10" />
-                    <div class="text-2xl">{{ count_failed }}</div>
+                    <div class="text-2xl">{{ count.failed }}</div>
                 </div>
             </div>
         </div>
@@ -129,10 +129,7 @@ export default defineComponent({
         pelatihan: Object,
         years: Array,
         filter: Object,
-        count_new: Number,
-        count_progress: Number,
-        count_success: Number,
-        count_failed: Number,
+        count: Object,
         chartId: {
             type: String,
             default: "bar-chart",

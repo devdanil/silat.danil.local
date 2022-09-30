@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\BahanController;
 use App\Http\Controllers\BobotController;
 use App\Http\Controllers\EditorController;
+use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -43,7 +44,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor.upload');
     Route::post('/sipelatihan/editor/upload', [EditorController::class, 'upload']);
 
-    Route::post('bobot/{pelatihan}', [BobotController::class, 'store'])->name('bobot.store');
+
+
+
+    Route::resource('katalog', KatalogController::class)->except('update');
+    Route::post('katalog/{katalog}/update', [KatalogController::class, 'update'])->name('katalog.update');
+    Route::resource('bobot', BobotController::class)->only('store', 'destroy');
+    Route::post('katalog/{katalog}/process', [KatalogController::class, 'process'])->name('katalog.process');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');

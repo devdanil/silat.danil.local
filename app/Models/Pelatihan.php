@@ -12,21 +12,14 @@ class Pelatihan extends Model
     protected $table = 'silat_pelatihan';
 
     protected $fillable = [
-        'judul',
-        'jenis_pelatihan',
-        'ket_jabatan',
-        'instansi',
+        'katalog_id',
         'slug',
-        'deskripsi',
-        'silabus',
-        'persyaratan',
-        'tgl_mulai',
-        'tgl_selesai',
+        'mulai_pelatihan',
+        'selesai_pelatihan',
         'mulai_pendaftaran',
         'selesai_pendaftaran',
         'batas_konfirmasi',
         'kuota',
-        'is_publish',
         'status_id',
         'keterangan',
         'created_by',
@@ -37,26 +30,22 @@ class Pelatihan extends Model
     {
         return 'slug';
     }
+    public function katalog()
+    {
+        return $this->belongsTo(Katalog::class, 'katalog_id', 'id');
+    }
+    public function pendaftaran()
+    {
+        return $this->hasMany(Pendaftaran::class, 'pelatihan_id', 'id');
+    }
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id', 'id');
     }
-
-    public function jabatan()
-    {
-        return $this->hasMany(JabatanPelatihan::class, 'pelatihan_id', 'id');
-    }
-
-    public function bahan()
-    {
-        return $this->hasMany(BahanPelatihan::class, 'pelatihan_id', 'id');
-    }
-
     public function bobot()
     {
-        return $this->hasMany(BobotPelatihan::class, 'pelatihan_id', 'id');
+        return $this->hasMany(PelatihanBobot::class, 'pelatihan_id', 'id');
     }
-
     public function logs()
     {
         return $this->hasMany(LogPelatihan::class, 'pelatihan_id', 'id');

@@ -24,23 +24,13 @@ class StorePelatihanRequest extends FormRequest
     public function rules()
     {
         return [
-            'judul' => ['required', 'max:255'],
-            'jenis_pelatihan' => ['required', 'max:50'],
-            'ket_jabatan' => ['required_if:jenis_pelatihan,fungsional', 'array', 'max:50'],
-            'instansi' => ['required', 'max:50'],
-            'deskripsi' => ['required'],
-            'silabus' => ['required'],
-            'persyaratan' => ['required'],
-            'tgl_mulai' => ['required', 'date'],
-            'tgl_selesai' => ['required', 'date'],
-            'mulai_pendaftaran' => ['required_if:is_publish,t'],
-            'selesai_pendaftaran' => ['required_if:is_publish,t'],
+            'katalog_id' => ['required'],
+            'mulai_pelatihan' => ['required', 'date'],
+            'selesai_pelatihan' => ['required', 'date'],
+            'mulai_pendaftaran' => ['required', 'date'],
+            'selesai_pendaftaran' => ['required', 'date'],
+            'status_id' => ['required', 'numeric', 'max:2', 'min:1'],
             'kuota' => ['required', 'numeric'],
-            'status_id' => ['numeric', 'max:2', 'min:1'],
-            'is_publish' => ['boolean'],
-            'kd_jabatan' => ['required', 'array'],
-            'file_bahan' => ['array'],
-            'file_bahan.*' => ['mimes:pdf,xlsx,xls,docx,doc', 'file', 'max:2048']
         ];
     }
 }

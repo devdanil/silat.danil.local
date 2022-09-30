@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BahanPelatihan;
+use App\Models\KatalogBahan;
 
 class BahanController extends Controller
 {
-    public function destroy(BahanPelatihan $bahan)
+    public function destroy(KatalogBahan $bahan)
     {
-        $bahans = BahanPelatihan::where('pelatihan_id', $bahan->pelatihan_id)->where('id', '!=', $bahan->id)->get();
+        $bahans = KatalogBahan::where('katalog_id', $bahan->katalog_id)->where('id', '!=', $bahan->id)->get();
         $bahan->delete();
         return response()->json($bahans);
     }

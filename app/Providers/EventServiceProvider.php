@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Events\CreatePelatihan;
+use App\Events\KatalogEvent;
 use App\Events\ProcessPelatihan;
 use App\Listeners\StoreJabatan;
 use App\Listeners\StoreLogPelatihan;
@@ -20,9 +21,12 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
 
-        CreatePelatihan::class => [
+        KatalogEvent::class => [
             StoreJabatan::class,
             UploadBahan::class,
+        ],
+
+        CreatePelatihan::class => [
             StoreLogPelatihan::class,
         ],
         ProcessPelatihan::class => [

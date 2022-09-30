@@ -17,14 +17,10 @@ class CreatePelatihan
      * @return void
      */
     public $pelatihan;
-    public $jabatan;
-    public $bahan;
 
-    public function __construct($pelatihan, $jabatan, $bahan)
+    public function __construct($pelatihan)
     {
         $this->pelatihan = $pelatihan;
-        $this->jabatan = $jabatan;
-        $this->bahan = $bahan;
     }
 
     /**

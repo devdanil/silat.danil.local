@@ -36,16 +36,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request)
     {
-        $rolesID = $request->user() ? $request->user()->roles()->pluck('role_id')->all() : [];
-        $menus = $request->user() ? Menu::whereNull('parent_id')->whereHas('roles', function ($query) use ($rolesID) {
+        $rolesID = $request->user() ? $request->user()->roles()->pluck('role_id')->all() : [null];
+        $menus = Menu::select('id', 'order', 'route', 'icon', 'name')->whereNull('parent_id')->whereHas('roles', function ($query) use ($rolesID) {
             $query->whereIn('role_id', $rolesID);
         })->with('childs', function ($query) use ($rolesID) {
-            $query->whereHas('roles', function ($query2) use ($rolesID) {
+            $query->select('parent_id', 'id', 'order', 'route', 'icon', 'name')->whereHas('roles', function ($query2) use ($rolesID) {
                 $query2->whereIn('role_id', $rolesID);
             });
-        })->orderBy('order', 'asc')->get() : [];
-        $rolesName = Role::whereIn('id', $rolesID)->pluck('name')->all();
-
+        })->orderBy('order', 'asc')->get();
         return array_merge(parent::share($request), [
             'app' => [
                 'name' => env('APP_NAME'),
@@ -55,7 +53,6 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
                 'roles' => [
                     'id' => $rolesID,
-                    'name' => $rolesName
                 ],
                 'menus' => $menus
             ],
@@ -63,9 +60,9 @@ class HandleInertiaRequests extends Middleware
                 'msg' => $request->session()->get('flash.msg'),
                 'error' => $request->session()->get('flash.error'),
             ],
-            'ziggy' => function () {
-                return (new Ziggy)->toArray();
-            },
+            // 'ziggy' => function () {
+            //     return (new Ziggy)->toArray();
+            // },
         ]);
     }
 }
