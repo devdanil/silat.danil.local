@@ -15,6 +15,7 @@ class Pendaftaran extends Model
         'nip',
         'pelatihan_id',
         'jumlah_bobot',
+        'registered_at',
         'confirmed_at',
         'rejected_at',
         'approved_at',

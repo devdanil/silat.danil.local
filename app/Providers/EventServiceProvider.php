@@ -27,6 +27,7 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         CreatePelatihan::class => [
+            StorePendaftaran::class,
             StoreLogPelatihan::class,
         ],
         ProcessPelatihan::class => [

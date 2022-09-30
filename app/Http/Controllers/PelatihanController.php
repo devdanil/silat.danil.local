@@ -91,9 +91,7 @@ class PelatihanController extends Controller
             $query->whereNotIn('key',  ['instansi_uml', 'instansi_pusat']);
         })->orWhere('group', 'jabatan')->whereIn('key', $kd_jabatan)->orderBy('order', 'asc')->get(['key', 'value']);
 
-        $all_jabatan =  $data['kriteria']->pluck('key')->all();
         $ket_jabatan = json_decode($katalog->ket_jabatan);
-        $instansi = $katalog->instansi;
         $data['bobots'] = PelatihanBobot::select('id', 'key', 'bobot')->with(['variable:key,value'])->where('pelatihan_id', $pelatihan->id)->orderByDesc('id')->get();
         $peserta = Peserta::whereHas('pendaftaran', function ($query) use ($pelatihan) {
             $query->where('pelatihan_id', $pelatihan->id);
@@ -139,12 +137,14 @@ class PelatihanController extends Controller
             $query->where('pelatihan_id', $pelatihan->id)
                 ->when($filter['confirmed'] == "approved", function ($query2) {
                     $query2->whereNotNull('approved_at');
-                })->when($filter['confirmed'] == "confirmed", function ($query2) use ($pelatihan) {
-                    $query2->whereNull('approved_at')->whereNotNull('confirmed_at');
-                })->when($filter['confirmed'] == "waiting", function ($query2) use ($pelatihan) {
-                    $query2->whereNull('confirmed_at', NULL)->whereNull('rejected_at', NULL);
                 })->when($filter['confirmed'] == "rejected", function ($query2) use ($pelatihan) {
-                    $query2->whereNotNull('rejected_at', "!=", NULL);
+                    $query2->whereNotNull('rejected_at');
+                })->when($filter['confirmed'] == "confirmed", function ($query2) use ($pelatihan) {
+                    $query2->whereNotNull('confirmed_at')->whereNull('approved_at');
+                })->when($filter['confirmed'] == "registered", function ($query2) use ($pelatihan) {
+                    $query2->whereNotNull('registered_at')->whereNull('confirmed_at');
+                })->when($filter['confirmed'] == "unregistered", function ($query2) use ($pelatihan) {
+                    $query2->whereNull('registered_at');
                 });
         })->when($filter['search'], function ($query) use ($filter) {
             if ($filter['key'] == 'jabatan') {

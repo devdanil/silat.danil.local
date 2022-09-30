@@ -568,7 +568,7 @@
       </form>
       <div
         class="bg-white shadow rounded-lg mt-3 border-t-2 border-sky-500"
-        v-if="pelatihan.status_id > 1 && bobots.length > 0"
+        v-if="pelatihan.status_id > 1"
       >
         <div class="p-3 border-b">
           <h2 class="text-lg leading-6 font-medium inline-flex items-center">
@@ -613,7 +613,7 @@
             </div>
             <div
               class="rounded-md flex pt-3 sm:pt-0 sm:ml-3"
-              v-if="pelatihan.status_id > 4"
+              v-if="pelatihan.status_id > 1"
             >
               <span
                 class="
@@ -642,10 +642,11 @@
                 v-model="filter.confirmed"
               >
                 <option value="">Semua</option>
-                <option value="approved">Disetujui</option>
+                <option value="registered">Terdaftar</option>
+                <option value="unregistered">Tidak Terdaftar</option>
                 <option value="confirmed">Dikonfirmasi</option>
+                <option value="approved">Disetujui</option>
                 <option value="rejected">Ditolak</option>
-                <option value="waiting">Belum Dikonfirmasi</option>
               </select>
             </div>
             <div class="rounded-md flex sm:ml-auto mt-3 sm:mt-0">
@@ -723,7 +724,7 @@
                 <th
                   scope="col"
                   class="text-center th"
-                  v-if="pelatihan.status_id > 4"
+                  v-if="pelatihan.status_id > 1"
                 >
                   Status
                 </th>
@@ -786,7 +787,7 @@
 
                 <td
                   class="td text-center whitespace-nowrap"
-                  v-if="pelatihan.status_id > 4"
+                  v-if="pelatihan.status_id > 1"
                 >
                   <span
                     class="
@@ -801,12 +802,25 @@
                       text-teal-900
                       shadow-teal-500
                     "
-                    v-if="
-                      item.pendaftaran[0] &&
-                      item.pendaftaran[0].approved_at != null
-                    "
+                    v-if="item.pendaftaran[0].approved_at"
                   >
                     Disetujui </span
+                  ><span
+                    class="
+                      px-2
+                      py-0.5
+                      font-semibold
+                      text-xs
+                      tracking-wider
+                      rounded-full
+                      shadow
+                      bg-red-200
+                      text-red-900
+                      shadow-red-500
+                    "
+                    v-else-if="item.pendaftaran[0].rejected_at"
+                  >
+                    Ditolak </span
                   ><span
                     class="
                       px-2
@@ -821,32 +835,11 @@
                       shadow-sky-500
                     "
                     v-else-if="
-                      item.pendaftaran[0] &&
-                      item.pendaftaran[0].confirmed_at != null &&
-                      item.pendaftaran[0].approved_at == null
+                      item.pendaftaran[0].confirmed_at &&
+                      !item.pendaftaran[0].approved_at
                     "
                   >
-                    Dikonfirmasi
-                  </span>
-                  <span
-                    class="
-                      px-2
-                      py-0.5
-                      font-semibold
-                      text-xs
-                      tracking-wider
-                      rounded-full
-                      shadow
-                      bg-red-200
-                      text-red-900
-                      shadow-red-500
-                    "
-                    v-else-if="
-                      item.pendaftaran[0] &&
-                      item.pendaftaran[0].rejected_at != null
-                    "
-                  >
-                    Ditolak </span
+                    Dikonfirmasi </span
                   ><span
                     class="
                       px-2
@@ -860,9 +853,29 @@
                       text-yellow-900
                       shadow-yellow-500
                     "
+                    v-else-if="
+                      item.pendaftaran[0].registered_at &&
+                      !item.pendaftaran[0].confirmed_at
+                    "
+                  >
+                    Terdaftar
+                  </span>
+                  <span
+                    class="
+                      px-2
+                      py-0.5
+                      font-semibold
+                      text-xs
+                      tracking-wider
+                      rounded-full
+                      shadow
+                      bg-gray-200
+                      text-gray-900
+                      shadow-gray-500
+                    "
                     v-else
                   >
-                    Belum Dikonfirmasi
+                    Tidak Terdaftar
                   </span>
                 </td>
                 <td
@@ -879,7 +892,7 @@
             </tbody>
             <tfoot
               class="bg-gray-50 divide-y divide-gray-200"
-              v-if="pelatihan.status_id > 4"
+              v-if="pelatihan.status_id > 1"
             >
               <tr>
                 <td class="pl-6 pr-3 py-2 align-top" colspan="5">

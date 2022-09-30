@@ -25,8 +25,8 @@ class BobotController extends Controller
     }
     public function destroy(PelatihanBobot $bobot, Request $request)
     {
-        $this->generate_bobot($bobot->pelatihan_id);
         $bobot->delete();
+        $this->generate_bobot($bobot->pelatihan_id);
         $request->session()->flash('flash.msg', 'Data berhasil dihapus');
         $request->session()->flash('flash.error', false);
         return back();
@@ -37,67 +37,47 @@ class BobotController extends Controller
         $pelatihan = Pelatihan::find($pelatihan_id);
         if ($pelatihan->bobot->count() > 0) {
             $katalog = $pelatihan->katalog;
-            $katalogs = $katalog->syarat_katalog ? json_decode($katalog->syarat_katalog) : null;
-            $pelatihans = $katalogs ? Pelatihan::whereIn('katalog_id', $katalogs)->get(['id']) : null;
-            $instansi = $katalog->instansi;
-            $ket_jabatan = json_decode($katalog->ket_jabatan);
             $jenis_pelatihan = $katalog->jenis_pelatihan;
-            $peserta =  Peserta::select('nip', 'kd_jabatan', 'angka_kredit', 'lokasi_dinas')->whereIn('kd_jabatan',  $katalog->jabatan()->pluck('kd_jabatan')->all())->when($katalog->jenis_pelatihan == 'fungsional', function ($query) use ($ket_jabatan) {
-                $query->whereIn('keterangan_jbt', $ket_jabatan);
-            })->when($katalog->instansi != 'pusat_uml', function ($query) use ($instansi) {
-                $query->where('lokasi_dinas', $instansi);
-            })->when($pelatihans, function ($query) use ($pelatihans) {
-                $query->whereHas('pendaftaran', function ($query2) use ($pelatihans) {
-                    $query2->whereIn('pelatihan_id', $pelatihans->pluck('id')->all());
-                });
-            })->withCount(['riwayatPelatihan as gagal' => function ($query) use ($jenis_pelatihan) {
-                $query->where('jenis_pelatihan', $jenis_pelatihan)->where('status', '!=', 'Disetujui');
-            }, 'riwayatPelatihan as mengulang' => function ($query) use ($jenis_pelatihan) {
-                $query->where('jenis_pelatihan', $jenis_pelatihan)->whereYear('created_date', date('Y'));
-            }])->orderBy('nama_lengkap', 'ASC')->get();
-
-            $data = [];
-            Pendaftaran::where('pelatihan_id', $pelatihan->id)->delete();
+            $peserta = Pendaftaran::select('id', 'nip')->where('pelatihan_id', $pelatihan_id)->with('peserta', function ($query) use ($jenis_pelatihan) {
+                $query->select('nip', 'kd_jabatan', 'angka_kredit', 'lokasi_dinas')->withCount(['riwayatPelatihan as gagal' => function ($query2) use ($jenis_pelatihan) {
+                    $query2->where('jenis_pelatihan', $jenis_pelatihan)->where('status', '!=', 'Disetujui');
+                }, 'riwayatPelatihan as mengulang' => function ($query2) use ($jenis_pelatihan) {
+                    $query2->where('jenis_pelatihan', $jenis_pelatihan)->whereYear('created_date', date('Y'));
+                }]);
+            })->get();
+            // $i = 0;
             // $temp = [];
-            $i = 0;
             foreach ($peserta as $key) {
                 $bobot = 0;
                 foreach ($pelatihan->bobot as $key2) {
-                    if ($key2->key == 'less_kredit' && $key->angka_kredit < $katalog->angka_kredit) {
+                    if ($key2->key == 'less_kredit' && $key->peserta->angka_kredit < $katalog->angka_kredit) {
                         $bobot = $bobot - $key2->bobot;
                         // $temp[$i][$key2->key] = $key2->bobot;
-                    } elseif ($key2->key == 'more_kredit' && $key->angka_kredit >= $katalog->angka_kredit) {
+                    } elseif ($key2->key == 'more_kredit' && $key->peserta->angka_kredit >= $katalog->angka_kredit) {
                         $bobot = $bobot + $key2->bobot;
                         // $temp[$i][$key2->key] = $key2->bobot;
-                    } elseif ($key2->key == 'instansi_uml' && $key->lokasi_dinas == 'uml') {
+                    } elseif ($key2->key == 'instansi_uml' && $key->peserta->lokasi_dinas == 'uml') {
                         $bobot = $bobot + $key2->bobot;
                         // $temp[$i][$key2->key] = $key2->bobot;
-                    } elseif ($key2->key == 'instansi_pusat' && $key->lokasi_dinas == 'pusat') {
+                    } elseif ($key2->key == 'instansi_pusat' && $key->peserta->lokasi_dinas == 'pusat') {
                         $bobot = $bobot + $key2->bobot;
                         // $temp[$i][$key2->key] = $key2->bobot;
-                    } elseif ($key2->key == 'pernah_gagal' && $key->gagal > 0) {
+                    } elseif ($key2->key == 'pernah_gagal' && $key->peserta->gagal > 0) {
                         $bobot = $bobot - $key2->bobot;
                         // $temp[$i][$key2->key] = $key2->bobot;
-                    } elseif ($key2->key == 'peserta_mengulang' && $key->mengulang > 0) {
+                    } elseif ($key2->key == 'peserta_mengulang' && $key->peserta->mengulang > 0) {
                         $bobot = $bobot - $key2->bobot;
                         // $temp[$i][$key2->key] = $key2->bobot;
                     } else {
-                        if ($key2->key == $key->kd_jabatan) {
+                        if ($key2->key == $key->peserta->kd_jabatan) {
                             $bobot = $bobot + $key2->bobot;
                             // $temp[$i][$key2->key] = $key2->bobot;
                         }
                     }
                 }
-                $i++;
-                $data[] = [
-                    'nip' => $key->nip,
-                    'pelatihan_id' => $pelatihan->id,
-                    'jumlah_bobot' => $bobot,
-                    'created_by' => Auth::id(),
-                    'updated_by' => Auth::id(),
-                ];
+                // $i++;
+                Pendaftaran::where('id', $key->id)->update(['jumlah_bobot' => $bobot, 'updated_by' => Auth::id()]);
             }
-            Pendaftaran::insert($data);
         }
     }
 }

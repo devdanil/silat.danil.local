@@ -53,7 +53,8 @@ class KatalogController extends Controller
         $data['slug'] = Katalog::where('slug', $slug)->count() > 0 ? $slug . '-' . time() : $slug;
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
-        $data['ket_jabatan'] = json_encode($data['ket_jabatan']);
+        $data['syarat_katalog'] = json_encode($request->post('syarat_katalog'));
+        $data['ket_jabatan'] = json_encode($request->post('ket_jabatan'));
         $katalog = Katalog::create($data);
         event(new KatalogEvent($katalog, $request->post('kd_jabatan'), $request->file('file_bahan')));
         $request->session()->flash('flash.msg', "Katalog berhasil disimpan");
