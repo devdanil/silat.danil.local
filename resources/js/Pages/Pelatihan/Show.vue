@@ -57,7 +57,8 @@
         <div
           v-if="
             pelatihan.status_id == 4 &&
-            // new Date(today).getTime() > pelatihan.selesai_pendaftaran &&
+            new Date(today).getTime() >
+              new Date(pelatihan.selesai_pendaftaran).getTime() &&
             hasRolesID([pelatihan.status.role_id])
           "
         >
@@ -70,6 +71,7 @@
           </button>
           <button
             type="button"
+            v-if="pelatihan.kuota > status.registered"
             @click.prevent="tanggalPendaftaran"
             class="btn btn-md btn-yellow ml-1"
           >
@@ -92,7 +94,7 @@
             <CheckIcon class="h-5 w-5 mr-2" /> Lanjutkan Pelatihan
           </button>
           <button
-            v-if="katalog.kuota > confirmed.approved"
+            v-if="pelatihan.kuota > status.confirmed"
             type="button"
             @click.prevent="batasKonfirmasi()"
             class="btn btn-md btn-yellow ml-1"
@@ -104,7 +106,7 @@
       <div class="bg-white shadow rounded-lg border-t-2 border-sky-500">
         <div class="p-3 border-b">
           <h2 class="text-lg leading-6 font-medium inline-flex items-center">
-            <NewspaperIcon class="h-6 w-6 mr-2" />Katalog Penilaian
+            <NewspaperIcon class="h-6 w-6 mr-2" />Katalog Pelatihan
           </h2>
         </div>
         <div class="overflow-auto pb-3">
@@ -639,7 +641,7 @@
                   sm:text-sm
                   border-gray-300
                 "
-                v-model="filter.confirmed"
+                v-model="filter.status"
               >
                 <option value="">Semua</option>
                 <option value="registered">Terdaftar</option>
@@ -756,24 +758,7 @@
                   Kosong
                 </td>
               </tr>
-              <tr
-                v-for="(item, index) in peserta.data"
-                :key="index"
-                :class="{
-                  'text-teal-500':
-                    (peserta.current_page - 1) * peserta.per_page + index <
-                      pelatihan.kuota &&
-                    !filter.search &&
-                    !filter.confirmed &&
-                    pelatihan.status_id == 5,
-                  'text-red-500':
-                    (peserta.current_page - 1) * peserta.per_page + index >=
-                      pelatihan.kuota &&
-                    !filter.search &&
-                    !filter.confirmed &&
-                    pelatihan.status_id == 5,
-                }"
-              >
+              <tr v-for="(item, index) in peserta.data" :key="index">
                 <td class="pl-6 pr-3 py-2 align-top w-1 whitespace-nowrap">
                   {{
                     (peserta.current_page - 1) * peserta.per_page + index + 1
@@ -882,11 +867,7 @@
                   class="pl-3 pr-6 py-2 align-top text-right"
                   v-if="pelatihan.status_id > 1 && bobots.length > 0"
                 >
-                  {{
-                    item.pendaftaran.length > 0
-                      ? item.pendaftaran[0].jumlah_bobot
-                      : "-"
-                  }}
+                  {{ item.pendaftaran[0].jumlah_bobot }}
                 </td>
               </tr>
             </tbody>
@@ -896,37 +877,47 @@
             >
               <tr>
                 <td class="pl-6 pr-3 py-2 align-top" colspan="5">
-                  Jumlah Pendaftaran yang Disetujui
+                  Jumlah Peserta yang Disetujui
                 </td>
 
                 <td class="pl-3 pr-6 py-2 align-top text-right">
-                  {{ confirmed.approved }}
+                  {{ status.approved }}
                 </td>
               </tr>
               <tr>
                 <td class="pl-6 pr-3 py-2 align-top" colspan="5">
-                  Jumlah Pendaftaran yang Dikonfirmasi
+                  Jumlah Peserta yang Ditolak
                 </td>
 
                 <td class="pl-3 pr-6 py-2 align-top text-right">
-                  {{ confirmed.confirmed }}
+                  {{ status.rejected }}
                 </td>
               </tr>
               <tr>
                 <td class="pl-6 pr-3 py-2 align-top" colspan="5">
-                  Jumlah Pendaftaran yang Ditolak
+                  Jumlah Peserta yang Dikonfirmasi
                 </td>
 
                 <td class="pl-3 pr-6 py-2 align-top text-right">
-                  {{ confirmed.rejected }}
+                  {{ status.confirmed }}
                 </td>
               </tr>
               <tr>
                 <td class="pl-6 pr-3 py-2 align-top" colspan="5">
-                  Jumlah Pendaftaran yang Belum Dikonfirmasi
+                  Jumlah Peserta yang Terdaftar
                 </td>
+
                 <td class="pl-3 pr-6 py-2 align-top text-right">
-                  {{ confirmed.waiting }}
+                  {{ status.registered }}
+                </td>
+              </tr>
+              <tr>
+                <td class="pl-6 pr-3 py-2 align-top" colspan="5">
+                  Jumlah Peserta yang Tidak Terdaftar
+                </td>
+
+                <td class="pl-3 pr-6 py-2 align-top text-right">
+                  {{ status.unregistered }}
                 </td>
               </tr>
             </tfoot>
@@ -1004,7 +995,7 @@ export default defineComponent({
     pelatihan: Object,
     filter: Object,
     peserta: Object,
-    confirmed: Object,
+    status: Object,
     kriteria: Array,
     bobots: Array,
     jumlah_peserta: Object,

@@ -129,21 +129,21 @@ class PelatihanController extends Controller
             'limit' => $request->get('limit') ?? 10,
             'search' => $request->get('search'),
             'key' => $request->get('key') ?? "nip",
-            'new' => $request->get('new') ?? "",
-            'confirmed' => $request->get('confirmed') ?? ""
+            'status' => $request->get('status') ?? ""
         ];
         $filter = $data['filter'];
+
         $data['peserta'] = Peserta::select('tbm_pegawai.nip', 'nama_lengkap', 'kd_jabatan', 'jumlah_bobot', 'confirmed_at', 'approved_at')->whereHas('pendaftaran', function ($query) use ($pelatihan, $filter) {
             $query->where('pelatihan_id', $pelatihan->id)
-                ->when($filter['confirmed'] == "approved", function ($query2) {
+                ->when($filter['status'] == "approved", function ($query2) {
                     $query2->whereNotNull('approved_at');
-                })->when($filter['confirmed'] == "rejected", function ($query2) use ($pelatihan) {
+                })->when($filter['status'] == "rejected", function ($query2) use ($pelatihan) {
                     $query2->whereNotNull('rejected_at');
-                })->when($filter['confirmed'] == "confirmed", function ($query2) use ($pelatihan) {
+                })->when($filter['status'] == "confirmed", function ($query2) use ($pelatihan) {
                     $query2->whereNotNull('confirmed_at')->whereNull('approved_at');
-                })->when($filter['confirmed'] == "registered", function ($query2) use ($pelatihan) {
+                })->when($filter['status'] == "registered", function ($query2) use ($pelatihan) {
                     $query2->whereNotNull('registered_at')->whereNull('confirmed_at');
-                })->when($filter['confirmed'] == "unregistered", function ($query2) use ($pelatihan) {
+                })->when($filter['status'] == "unregistered", function ($query2) use ($pelatihan) {
                     $query2->whereNull('registered_at');
                 });
         })->when($filter['search'], function ($query) use ($filter) {
@@ -158,13 +158,14 @@ class PelatihanController extends Controller
             $query->where('pelatihan_id', $pelatihan->id);
         })->join('silat_pendaftaran', function ($query) use ($pelatihan) {
             $query->on('silat_pendaftaran.nip', '=', 'tbm_pegawai.nip')->where('silat_pendaftaran.pelatihan_id', $pelatihan->id);
-        })->with('jabatan')->orderBy('approved_at', 'asc')->orderByDesc('jumlah_bobot')->orderBy('confirmed_at', 'ASC')->orderBy('nama_lengkap', 'ASC')->paginate($data['filter']['limit'])->appends($data['filter']);
+        })->with('jabatan')->orderBy('approved_at', 'asc')->orderBy('confirmed_at', 'asc')->orderBy('registered_at', 'asc')->orderByDesc('jumlah_bobot')->orderBy('confirmed_at', 'ASC')->orderBy('nama_lengkap', 'ASC')->paginate($data['filter']['limit'])->appends($data['filter']);
 
         $pendaftaran = Pendaftaran::where('pelatihan_id', $pelatihan->id)->get();
-        $data['confirmed']['approved'] =  $pendaftaran->where('approved_at', '!=', null)->count();
-        $data['confirmed']['confirmed'] =  $pendaftaran->where('confirmed_at', '!=', null)->where('approved_at', null)->count();
-        $data['confirmed']['rejected'] =  $pendaftaran->where('rejected_at', '!=', null)->count();
-        $data['confirmed']['waiting'] =  $pendaftaran->where('confirmed_at', null)->where('rejected_at', null)->count();
+        $data['status']['approved'] =  $pendaftaran->whereNotNull('approved_at')->count();
+        $data['status']['rejected'] =  $pendaftaran->whereNotNull('rejected_at')->count();
+        $data['status']['confirmed'] =  $pendaftaran->whereNotNull('confirmed_at')->whereNull('approved_at')->count();
+        $data['status']['registered'] =  $pendaftaran->whereNotNull('registered_at')->whereNull('confirmed_at')->count();
+        $data['status']['unregistered'] =  $pendaftaran->whereNull('registered_at')->count();
         return Inertia::render('Pelatihan/Show', $data);
     }
 
