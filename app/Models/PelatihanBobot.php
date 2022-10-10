@@ -14,11 +14,14 @@ class PelatihanBobot extends Model
         'pelatihan_id',
         'key',
         'bobot',
+        'kd_jabatan',
+        'nilai',
+        'jumlah_peserta'
     ];
 
     public function jabatan()
     {
-        return $this->belongsTo(Jabatan::class, 'key', 'kd_jabatan');
+        return $this->belongsTo(Jabatan::class, 'kd_jabatan', 'kd_jabatan');
     }
     public function variable()
     {

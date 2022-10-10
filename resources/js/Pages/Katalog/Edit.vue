@@ -206,19 +206,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="form.jenis_pelatihan == 'fungsional'">
-              <label class="block text-sm font-medium mb-1 mr-3">
-                Angka Kredit Minimal<i class="text-red-500 tex-xs">*</i>
-              </label>
-              <input
-                type="number"
-                max="100"
-                min="0"
-                required
-                v-model="form.angka_kredit"
-                class="f-input px-2"
-              />
-            </div>
+
             <div v-if="katalogs.length > 0">
               <label class="block text-sm font-medium mb-1 mr-3">
                 Syarat Perlatihan yang pernah diikuti
@@ -491,7 +479,6 @@ export default defineComponent({
         silabus: this.katalog.silabus,
         persyaratan: this.katalog.persyaratan,
         kd_jabatan: kd_jabatan,
-        angka_kredit: this.katalog.angka_kredit,
         file_bahan: [],
         syarat_katalog: this.katalog.syarat_katalog
           ? JSON.parse(this.katalog.syarat_katalog)

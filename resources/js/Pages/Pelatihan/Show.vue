@@ -199,18 +199,7 @@
                 {{ instansi[katalog.instansi] }}
               </td>
             </tr>
-            <tr
-              class="bg-gray-50"
-              v-if="katalog.jenis_pelatihan == 'fungsional'"
-            >
-              <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
-                Angka Kredit Minimal
-              </td>
-              <td class="td">:</td>
-              <td class="pl-3 pr-6 py-2 align-top text-justify">
-                {{ katalog.angka_kredit }}
-              </td>
-            </tr>
+
             <tr>
               <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
                 Kuota Peserta
@@ -344,7 +333,9 @@
             (showModal = !showModal),
               (bobot.id = null),
               (bobot.key = ''),
-              (bobot.bobot = null)
+              (bobot.bobot = null),
+              (bobot.nilai = null),
+              (bobot.kd_jabatan = '')
           "
         >
           <PlusIcon class="h-5 w-5 mr-2" />Bobot
@@ -379,6 +370,8 @@
                   No.
                 </th>
                 <th scope="col" class="text-left th">Kriteria</th>
+                <th scope="col" class="text-left th">Jenis JF</th>
+                <th scope="col" class="text-right th">Nilai Minimal</th>
                 <th scope="col" class="text-right th">Bobot</th>
                 <th
                   scope="col"
@@ -418,7 +411,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="bobots.length == 0">
-                <td colspan="5" class="text-center">Kosong</td>
+                <td colspan="8" class="text-center">Kosong</td>
               </tr>
               <tr v-for="(item, index) in bobots" :key="index">
                 <td class="pl-6 pr-3 py-2 align-top w-1 whitespace-nowrap">
@@ -427,9 +420,17 @@
                 <td class="td">
                   {{ item.variable.value }}
                 </td>
-                <td class="td text-right">{{ item.bobot }}</td>
+                <td class="td">
+                  {{ item.jabatan ? item.jabatan.jabatan : "-" }}
+                </td>
+                <td class="td text-right">
+                  {{ item.nilai ? item.nilai + "%" : "-" }}
+                </td>
+                <td class="td text-right">{{ item.bobot }}%</td>
                 <td class="pl-3 pr-6 py-2 align-top text-right">
-                  {{ jumlah_peserta[item.key] }}
+                  {{
+                    item.jumlah_peserta ? item.jumlah_peserta + " Orang" : "0"
+                  }}
                 </td>
                 <td
                   class="pl-3 pr-6 py-2 align-top text-center"
@@ -445,6 +446,8 @@
                       (showModal = true),
                         (bobot.id = item.id),
                         (bobot.key = item.key),
+                        (bobot.nilai = item.nilai),
+                        (bobot.kd_jabatan = item.kd_jabatan),
                         (bobot.bobot = item.bobot)
                     "
                     class="ml-1 btn btn-sm btn-yellow"
@@ -514,6 +517,75 @@
                     {{ item.value }}
                   </option>
                 </select>
+              </div>
+              <div
+                class="col-span-1"
+                v-if="bobot.key == 'angka_kredit' || bobot.key == 'prestasi'"
+              >
+                Jenis JF
+              </div>
+              <div
+                class="col-span-2"
+                v-if="bobot.key == 'angka_kredit' || bobot.key == 'prestasi'"
+              >
+                <select
+                  v-model="bobot.kd_jabatan"
+                  class="f-input px-2 focus:border-transparent"
+                  required
+                >
+                  <option value="">Pilih</option>
+                  <option
+                    v-for="(item, index) in katalog.jabatan"
+                    :key="index"
+                    :value="item.jabatan.kd_jabatan"
+                  >
+                    {{ item.jabatan.jabatan }}
+                  </option>
+                </select>
+              </div>
+              <div
+                class="col-span-1"
+                v-if="bobot.key == 'angka_kredit' || bobot.key == 'prestasi'"
+              >
+                Nilai Minimal
+              </div>
+              <div
+                class="col-span-2"
+                v-if="bobot.key == 'angka_kredit' || bobot.key == 'prestasi'"
+              >
+                <div class="border flex items-center rounded border-gray-300">
+                  <input
+                    v-model="bobot.nilai"
+                    type="number"
+                    min="0"
+                    max="100"
+                    class="
+                      focus:ring-sky-300
+                      py-1.5
+                      focus:border-sky-400
+                      w-full
+                      border-0
+                      rounded-l
+                      sm:text-sm
+                      border-gray-300
+                      px-2
+                    "
+                    required
+                  />
+                  <span
+                    class="
+                      position-absolute
+                      border-l
+                      right-0
+                      px-2
+                      py-1.5
+                      rounded-r
+                      sm:text-sm
+                      border-gray-300
+                    "
+                    >%</span
+                  >
+                </div>
               </div>
               <div class="col-span-1">Bobot</div>
               <div class="col-span-2">
@@ -753,13 +825,33 @@
                 <td
                   v-if="peserta.total == 0"
                   class="td text-center"
-                  colspan="7"
+                  colspan="5"
                 >
                   Kosong
                 </td>
               </tr>
               <tr v-for="(item, index) in peserta.data" :key="index">
-                <td class="pl-6 pr-3 py-2 align-top w-1 whitespace-nowrap">
+                <td
+                  class="pl-6 pr-3 py-2 align-top w-1 whitespace-nowrap"
+                  :class="{
+                    // 'bg-teal-400 text-white':
+                    //   (peserta.current_page - 1) * peserta.per_page +
+                    //     index +
+                    //     1 <=
+                    //     pelatihan.kuota &&
+                    //   !filter.status &&
+                    //   !filter.search &&
+                    //   item.pendaftaran[0].registered_at,
+                    // 'bg-red-400 text-white':
+                    //   (peserta.current_page - 1) * peserta.per_page +
+                    //     index +
+                    //     1 >
+                    //     pelatihan.kuota &&
+                    //   !filter.status &&
+                    //   !filter.search &&
+                    //   item.pendaftaran[0].registered_at,
+                  }"
+                >
                   {{
                     (peserta.current_page - 1) * peserta.per_page + index + 1
                   }}.
@@ -998,7 +1090,6 @@ export default defineComponent({
     status: Object,
     kriteria: Array,
     bobots: Array,
-    jumlah_peserta: Object,
   },
 
   data() {
@@ -1009,6 +1100,8 @@ export default defineComponent({
       bobot: this.$inertia.form({
         id: null,
         key: "",
+        kd_jabatan: "",
+        nilai: null,
         bobot: null,
         pelatihan_id: this.pelatihan.id,
       }),
@@ -1104,13 +1197,7 @@ export default defineComponent({
               status_id: status,
             },
             {
-              only: [
-                "pelatihan",
-                "jumlah_peserta",
-                "peserta",
-                "flash",
-                "errors",
-              ],
+              only: ["pelatihan", "peserta", "flash", "errors"],
             }
           );
         }
@@ -1128,7 +1215,7 @@ export default defineComponent({
       }).then((result) => {
         if (result.isConfirmed) {
           this.bobot.post(this.route("bobot.store"), {
-            only: ["bobots", "jumlah_peserta", "peserta", "flash", "errors"],
+            only: ["bobots", "peserta", "flash", "errors"],
             onFinish: () => {
               this.showModal = false;
             },

@@ -122,18 +122,7 @@
                 {{ instansi[katalog.instansi] }}
               </td>
             </tr>
-            <tr
-              class="bg-gray-50"
-              v-if="katalog.jenis_pelatihan == 'fungsional'"
-            >
-              <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
-                Angka Kredit Minimal
-              </td>
-              <td class="td">:</td>
-              <td class="pl-3 pr-6 py-2 align-top text-justify">
-                {{ katalog.angka_kredit }}
-              </td>
-            </tr>
+
             <tr class="bg-gray-50" v-if="katalogs.length > 0">
               <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
                 Syarat Perlatihan yang pernah diikuti

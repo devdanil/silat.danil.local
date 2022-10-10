@@ -17,7 +17,6 @@ class Katalog extends Model
         'syarat_katalog',
         'ket_jabatan',
         'instansi',
-        'angka_kredit',
         'slug',
         'deskripsi',
         'silabus',

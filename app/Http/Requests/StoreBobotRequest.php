@@ -29,6 +29,9 @@ class StoreBobotRequest extends FormRequest
                 return $query->where('pelatihan_id', $this->pelatihan_id);
             })->ignore($this->id)],
             'bobot' => ['required', 'numeric', 'max:100'],
+            'kd_jabatan' => ['required_if:key,angka_kredit', 'required_if:key,prestasi'],
+            'nilai' => ['required_if:key,angka_kredit'],
+
             'pelatihan_id' => ['required', 'numeric']
         ];
     }

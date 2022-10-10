@@ -19,7 +19,7 @@ class PelatihanPolicy
 
     public function view(User $user, Pelatihan $pelatihan)
     {
-        return $user->hasRolesID([1]) || (!in_array($pelatihan->status_id, [1, 7]) && $user->hasRolesID([2])) || !in_array($pelatihan->status_id, [1, 2, 7]) && $user->hasRolesID([3]);
+        return $user->hasRolesID([1, 2, 3]);
     }
 
     public function create(User $user)

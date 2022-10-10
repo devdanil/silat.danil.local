@@ -18,7 +18,7 @@ class StorePendaftaran
             $pelatihans = $katalogs ? Pelatihan::whereIn('katalog_id', $katalogs)->get(['id']) : null;
             $instansi = $katalog->instansi;
             $ket_jabatan = json_decode($katalog->ket_jabatan);
-            $peserta =  Peserta::select('nip', 'kd_jabatan', 'angka_kredit', 'lokasi_dinas')->whereIn('kd_jabatan',  $katalog->jabatan()->pluck('kd_jabatan')->all())->when($katalog->jenis_pelatihan == 'fungsional', function ($query) use ($ket_jabatan) {
+            $peserta =  Peserta::select('nip', 'kd_jabatan')->whereIn('kd_jabatan',  $katalog->jabatan()->pluck('kd_jabatan')->all())->when($katalog->jenis_pelatihan == 'fungsional', function ($query) use ($ket_jabatan) {
                 $query->whereIn('keterangan_jbt', $ket_jabatan);
             })->when($katalog->instansi != 'pusat_uml', function ($query) use ($instansi) {
                 $query->where('lokasi_dinas', $instansi);

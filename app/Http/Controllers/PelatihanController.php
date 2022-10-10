@@ -84,46 +84,14 @@ class PelatihanController extends Controller
             $query->select('silat_katalog_jabatan.kd_jabatan', 'silat_katalog_jabatan.katalog_id')->join('tbk_jabatan', 'tbk_jabatan.kd_jabatan', '=', 'silat_katalog_jabatan.kd_jabatan')->orderBy('tbk_jabatan.kd_group', 'asc')->orderBy('silat_katalog_jabatan.kd_jabatan', 'desc')->with('jabatan:kd_jabatan,jabatan');
         },  'bahan:katalog_id,file,name',])->first();
 
-        $kd_jabatan = $katalog->jabatan()->pluck('kd_jabatan');
+        $kd_jabatan = $katalog->jabatan()->pluck('kd_jabatan')->all();
         $data['kriteria'] = Variable::where('group', 'bobot')->when($katalog->jenis_pelatihan != 'fungsional', function ($query) {
-            $query->whereNotIn('key', ['less_kredit', 'more_kredit']);
+            $query->whereNotIn('key', ['angka_kredit']);
         })->when($pelatihan->instansi != 'pusat_uml', function ($query) {
             $query->whereNotIn('key',  ['instansi_uml', 'instansi_pusat']);
         })->orWhere('group', 'jabatan')->whereIn('key', $kd_jabatan)->orderBy('order', 'asc')->get(['key', 'value']);
 
-        $ket_jabatan = json_decode($katalog->ket_jabatan);
-        $data['bobots'] = PelatihanBobot::select('id', 'key', 'bobot')->with(['variable:key,value'])->where('pelatihan_id', $pelatihan->id)->orderByDesc('id')->get();
-        $peserta = Peserta::whereHas('pendaftaran', function ($query) use ($pelatihan) {
-            $query->where('pelatihan_id', $pelatihan->id);
-        })->get();
-        $jumlah_peserta = [];
-        $jenis_pelatihan = $katalog->jenis_pelatihan;
-        foreach ($data['bobots'] as $key) {
-            if ($key->key == 'less_kredit') {
-                $jumlah_peserta[$key->key] = $peserta->where('angkat_kredit', '<', $katalog->angka_kredit)->count();
-            } elseif ($key->key == 'more_kredit') {
-                $jumlah_peserta[$key->key] = $peserta->where('angkat_kredit', '>=', $katalog->angka_kredit)->count();
-            } elseif ($key->key == 'instansi_uml') {
-                $jumlah_peserta[$key->key] = $peserta->where('lokasi_dinas', 'uml')->count();
-            } elseif ($key->key == 'instansi_pusat') {
-                $jumlah_peserta[$key->key] = $peserta->where('lokasi_dinas', 'pusat')->count();
-            } elseif ($key->key == 'pernah_gagal') {
-                $jumlah_peserta[$key->key] = Peserta::whereIn('kd_jabatan', $kd_jabatan)->when($katalog->jenis_pelatihan == 'fungsional', function ($query) use ($ket_jabatan) {
-                    $query->whereIn('keterangan_jbt', $ket_jabatan);
-                })->whereHas('riwayatPelatihan', function ($query) use ($jenis_pelatihan) {
-                    $query->where('jenis_pelatihan', $jenis_pelatihan)->where('status', '!=', 'Disetujui');
-                })->count();
-            } elseif ($key->key == 'peserta_mengulang') {
-                $jumlah_peserta[$key->key] = Peserta::whereIn('kd_jabatan', $kd_jabatan)->when($katalog->jenis_pelatihan == 'fungsional', function ($query) use ($ket_jabatan) {
-                    $query->whereIn('keterangan_jbt', $ket_jabatan);
-                })->whereHas('riwayatPelatihan', function ($query) use ($jenis_pelatihan) {
-                    $query->where('jenis_pelatihan', $jenis_pelatihan)->whereYear('created_date', date('Y'));
-                })->count();
-            } else {
-                $jumlah_peserta[$key->key] = $peserta->where('kd_jabatan', $key->key)->count();
-            }
-        }
-        $data['jumlah_peserta'] = $jumlah_peserta;
+        $data['bobots'] = PelatihanBobot::select('id', 'key', 'bobot', 'nilai', 'kd_jabatan', 'jumlah_peserta')->with(['variable:key,value', 'jabatan:kd_jabatan,jabatan'])->where('pelatihan_id', $pelatihan->id)->orderByDesc('id')->get();
 
         $data['filter'] = [
             'limit' => $request->get('limit') ?? 10,
@@ -132,18 +100,18 @@ class PelatihanController extends Controller
             'status' => $request->get('status') ?? ""
         ];
         $filter = $data['filter'];
-
-        $data['peserta'] = Peserta::select('tbm_pegawai.nip', 'nama_lengkap', 'kd_jabatan', 'jumlah_bobot', 'confirmed_at', 'approved_at')->whereHas('pendaftaran', function ($query) use ($pelatihan, $filter) {
-            $query->where('pelatihan_id', $pelatihan->id)
+        $filter['pelatihan_id'] = $pelatihan->id;
+        $data['peserta'] = Peserta::select('tbm_pegawai.nip', 'nama_lengkap', 'kd_jabatan', 'jumlah_bobot', 'confirmed_at', 'approved_at')->whereHas('pendaftaran', function ($query) use ($filter) {
+            $query->where('pelatihan_id', $filter['pelatihan_id'])
                 ->when($filter['status'] == "approved", function ($query2) {
                     $query2->whereNotNull('approved_at');
-                })->when($filter['status'] == "rejected", function ($query2) use ($pelatihan) {
+                })->when($filter['status'] == "rejected", function ($query2) {
                     $query2->whereNotNull('rejected_at');
-                })->when($filter['status'] == "confirmed", function ($query2) use ($pelatihan) {
+                })->when($filter['status'] == "confirmed", function ($query2) {
                     $query2->whereNotNull('confirmed_at')->whereNull('approved_at');
-                })->when($filter['status'] == "registered", function ($query2) use ($pelatihan) {
+                })->when($filter['status'] == "registered", function ($query2) {
                     $query2->whereNotNull('registered_at')->whereNull('confirmed_at');
-                })->when($filter['status'] == "unregistered", function ($query2) use ($pelatihan) {
+                })->when($filter['status'] == "unregistered", function ($query2) {
                     $query2->whereNull('registered_at');
                 });
         })->when($filter['search'], function ($query) use ($filter) {

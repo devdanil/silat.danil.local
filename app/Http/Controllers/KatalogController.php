@@ -53,8 +53,8 @@ class KatalogController extends Controller
         $data['slug'] = Katalog::where('slug', $slug)->count() > 0 ? $slug . '-' . time() : $slug;
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
-        $data['syarat_katalog'] = json_encode($request->post('syarat_katalog'));
-        $data['ket_jabatan'] = json_encode($request->post('ket_jabatan'));
+        $data['syarat_katalog'] = $request->post('syarat_katalog') ? json_encode($request->post('syarat_katalog')) : null;
+        $data['ket_jabatan'] = $request->post('ket_jabatan') ? json_encode($request->post('ket_jabatan')) : null;
         $katalog = Katalog::create($data);
         event(new KatalogEvent($katalog, $request->post('kd_jabatan'), $request->file('file_bahan')));
         $request->session()->flash('flash.msg', "Katalog berhasil disimpan");
@@ -68,7 +68,7 @@ class KatalogController extends Controller
         $data['katalog'] = $katalog->load(['jabatan' => function ($query) {
             $query->select('silat_katalog_jabatan.kd_jabatan', 'silat_katalog_jabatan.katalog_id')->join('tbk_jabatan', 'tbk_jabatan.kd_jabatan', '=', 'silat_katalog_jabatan.kd_jabatan')->orderBy('tbk_jabatan.kd_group', 'asc')->orderBy('silat_katalog_jabatan.kd_jabatan', 'desc')->with('jabatan:kd_jabatan,jabatan');
         },  'bahan:katalog_id,file,name',]);
-        $data['katalogs'] = $katalog->syarat_katalog ? Katalog::whereIn('id', json_decode($katalog->syarat_katalog))->get(['id', 'judul']) : [];
+        $data['katalogs'] = $katalog->syarat_katalog && is_array(json_decode($katalog->syarat_katalog)) && count(json_decode($katalog->syarat_katalog)) > 0 ? Katalog::whereIn('id', json_decode($katalog->syarat_katalog))->get(['id', 'judul']) : [];
         return Inertia::render('Katalog/Show', $data);
     }
 
@@ -85,7 +85,8 @@ class KatalogController extends Controller
     {
         $data = $request->safe()->except(['file_bahan', 'kd_jabatan', 'jenis_pelatihan', 'judul']);
         $data['updated_by'] = Auth::id();
-        $data['ket_jabatan'] = json_encode($data['ket_jabatan']);
+        $data['syarat_katalog'] = $request->post('syarat_katalog') ? json_encode($request->post('syarat_katalog')) : null;
+        $data['ket_jabatan'] = $request->post('ket_jabatan') ? json_encode($request->post('ket_jabatan')) : null;
         $katalog->update($data);
         event(new KatalogEvent($katalog, $request->post('kd_jabatan'), $request->file('file_bahan')));
         $request->session()->flash('flash.msg', "Katalog berhasil diubah");
