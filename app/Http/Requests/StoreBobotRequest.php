@@ -14,7 +14,7 @@ class StoreBobotRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->hasRolesID([2]);
+        return $this->user()->hasRolesID([2, 3]);
     }
 
     /**

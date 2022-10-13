@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Models\Pelatihan;
 use App\Models\Pendaftaran;
 use App\Models\Peserta;
+use App\Models\RiwayatPelatihan;
 use Illuminate\Support\Facades\Auth;
 
 class StorePendaftaran
@@ -40,8 +41,11 @@ class StorePendaftaran
                 ];
             }
             Pendaftaran::insert($data);
+        } else if ($event->pelatihan->status_id == 4) {
+            $pendaftaran = Pendaftaran::whereNotNull('registered_at')->whereNull('rejected_at')->where('pelatihan_id', $event->pelatihan->id)->orderByDesc('jumlah_bobot')->orderBy('registered_at', 'asc')->limit($event->pelatihan->kuota)->get('id');
+            Pendaftaran::whereIn('id', $pendaftaran->pluck('id')->all())->update(['sendmail_at' => date('Y-m-d H:i:s'), 'updated_by' => Auth::id()]);
         } else if ($event->pelatihan->status_id == 6) {
-            $pendaftaran = Pendaftaran::whereNotNull('confirmed_at')->whereNull('rejected_at')->where('pelatihan_id', $event->pelatihan->id)->orderByDesc('jumlah_bobot')->orderBy('confirmed_at', 'asc')->limit($event->pelatihan->kuota)->get('id');
+            $pendaftaran = Pendaftaran::whereNotNull('confirmed_at')->whereNotNull('sendmail_at')->whereNull('rejected_at')->where('pelatihan_id', $event->pelatihan->id)->orderByDesc('jumlah_bobot')->orderBy('confirmed_at', 'asc')->limit($event->pelatihan->kuota)->get('id');
             Pendaftaran::whereIn('id', $pendaftaran->pluck('id')->all())->update(['approved_at' => date('Y-m-d H:i:s'), 'updated_by' => Auth::id()]);
             Pendaftaran::whereNull('confirmed_at')->where('pelatihan_id', $event->pelatihan->id)->update(['rejected_at' => date('Y-m-d H:i:s'), 'updated_by' => Auth::id()]);
         }

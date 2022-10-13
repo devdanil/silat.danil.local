@@ -27,4 +27,8 @@ class Pendaftaran extends Model
     {
         return $this->belongsTo(Peserta::class, 'nip', 'nip');
     }
+    public function pelatihan()
+    {
+        return $this->belongsTo(Pelatihan::class, 'pelatihan_id', 'id');
+    }
 }

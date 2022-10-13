@@ -42,11 +42,18 @@ class BobotController extends Controller
         if ($pelatihan->bobot->count() > 0) {
             $katalog = $pelatihan->katalog;
             $jenis_pelatihan = $katalog->jenis_pelatihan;
-            $pendaftaran = Pendaftaran::select('id', 'nip')->where('pelatihan_id', $pelatihan_bobot->pelatihan_id)->with('peserta', function ($query) use ($jenis_pelatihan) {
+            $pelatihan_id = $pelatihan->id;
+            $pendaftaran = Pendaftaran::select('id', 'nip')->where('pelatihan_id', $pelatihan_bobot->pelatihan_id)->with('peserta', function ($query) use ($jenis_pelatihan, $pelatihan_id) {
                 $query->select('nip', 'kd_jabatan', 'lokasi_dinas', 'kd_jabatan', 'kd_golongan')->withCount(['riwayatPelatihan as gagal' => function ($query2) use ($jenis_pelatihan) {
-                    $query2->where('jenis_pelatihan', $jenis_pelatihan)->where('status', '!=', 'Disetujui');
+                    $query2->where('jenis_pelatihan', $jenis_pelatihan)->where('status', 'like', 'Tidak Disetujui%');
                 }, 'riwayatPelatihan as mengulang' => function ($query2) use ($jenis_pelatihan) {
                     $query2->where('jenis_pelatihan', $jenis_pelatihan)->whereYear('created_date', date('Y'));
+                }, 'pendaftaran as mengulang2' => function ($query2)  use ($jenis_pelatihan, $pelatihan_id) {
+                    $query2->whereNotNull('approved_at')->where('pelatihan_id', '!=', $pelatihan_id)->whereHas('pelatihan', function ($query3) use ($jenis_pelatihan) {
+                        $query3->whereHas('katalog', function ($query4) use ($jenis_pelatihan) {
+                            $query4->where('jenis_pelatihan', $jenis_pelatihan);
+                        });
+                    });
                 }])->with(['jabatan:kd_jabatan,naik_pangkat,naik_jenjang', 'golongan:golongan,last_order']);
             })->get();
             $jumlah_peserta = [];
@@ -83,7 +90,7 @@ class BobotController extends Controller
                     } elseif ($key2->key == 'pernah_gagal' && $key->peserta->gagal > 0) {
                         $bobot = $bobot - $key2->bobot;
                         $jumlah_peserta[$key2->key] = $jumlah_peserta[$key2->key] + 1;
-                    } elseif ($key2->key == 'peserta_mengulang' && $key->peserta->mengulang > 0) {
+                    } elseif ($key2->key == 'peserta_mengulang' && ($key->peserta->mengulang > 0 || $key->peserta->mengulang2 > 0)) {
                         $bobot = $bobot - $key2->bobot;
                         $jumlah_peserta[$key2->key] = $jumlah_peserta[$key2->key] + 1;
                     } else {

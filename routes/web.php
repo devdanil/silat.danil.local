@@ -9,6 +9,7 @@ use App\Http\Controllers\BobotController;
 use App\Http\Controllers\EditorController;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\PelatihanController;
+use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,8 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor.upload');
     Route::post('/sipelatihan/editor/upload', [EditorController::class, 'upload']);
 
-
-
+    Route::get('pelatihan/{pelatihan}/peserta/export', [PesertaController::class, 'export'])->name('peserta.export');
 
     Route::resource('katalog', KatalogController::class)->except('update');
     Route::post('katalog/{katalog}/update', [KatalogController::class, 'update'])->name('katalog.update');

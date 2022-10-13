@@ -47,7 +47,9 @@
           class="btn btn-md btn-teal"
           v-if="
             (pelatihan.status_id == 1 ||
-              ((pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+              ((pelatihan.status_id == 2 ||
+                pelatihan.status_id == 3 ||
+                pelatihan.status_id == 7) &&
                 bobots.length > 0)) &&
             hasRolesID([pelatihan.status.role_id])
           "
@@ -76,6 +78,14 @@
             class="btn btn-md btn-yellow ml-1"
           >
             <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal Pendaftaran
+          </button>
+          <button
+            type="button"
+            v-if="pelatihan.kuota > status.registered"
+            @click.prevent="batalkanPelatihan"
+            class="btn btn-md btn-red ml-1"
+          >
+            <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan Pelatihan
           </button>
         </div>
         <div
@@ -121,7 +131,7 @@
                 {{ ucfirst(katalog.jenis_pelatihan) }}
               </td>
             </tr>
-            <tr>
+            <tr v-if="katalog.ket_jabatan">
               <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
                 Keterangan Jabatan
               </td>
@@ -237,7 +247,7 @@
             </tr>
             <tr
               class="bg-gray-50"
-              v-if="pelatihan.status_id > 7 && pelatihan.batas_konfirmasi"
+              v-if="pelatihan.status_id > 4 && pelatihan.batas_konfirmasi"
             >
               <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
                 Batas Konfirmasi
@@ -275,12 +285,9 @@
                 >
               </td>
             </tr>
-            <tr
-              class="bg-gray-50"
-              v-if="pelatihan.status_id == 10 || pelatihan.status_id == 12"
-            >
+            <tr class="bg-gray-50" v-if="pelatihan.status_id == 7">
               <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
-                Alasan Penolakan
+                Alasan Pembatalan
               </td>
               <td class="td">:</td>
               <td class="pl-3 pr-6 py-2 align-top">
@@ -324,7 +331,9 @@
       <div class="mt-3 sm:text-right">
         <button
           v-if="
-            (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+            (pelatihan.status_id == 2 ||
+              pelatihan.status_id == 3 ||
+              pelatihan.status_id == 7) &&
             hasRolesID([pelatihan.status.role_id])
           "
           type="button"
@@ -401,7 +410,9 @@
                     text-center
                   "
                   v-if="
-                    (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+                    (pelatihan.status_id == 2 ||
+                      pelatihan.status_id == 3 ||
+                      pelatihan.status_id == 7) &&
                     hasRolesID([pelatihan.status.role_id])
                   "
                 >
@@ -435,7 +446,9 @@
                 <td
                   class="pl-3 pr-6 py-2 align-top text-center"
                   v-if="
-                    (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+                    (pelatihan.status_id == 2 ||
+                      pelatihan.status_id == 3 ||
+                      pelatihan.status_id == 7) &&
                     hasRolesID([pelatihan.status.role_id])
                   "
                 >
@@ -452,7 +465,9 @@
                     "
                     class="ml-1 btn btn-sm btn-yellow"
                     v-if="
-                      (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+                      (pelatihan.status_id == 2 ||
+                        pelatihan.status_id == 3 ||
+                        pelatihan.status_id == 7) &&
                       hasRolesID([pelatihan.status.role_id])
                     "
                   >
@@ -464,7 +479,9 @@
                     @click="deleteBobot(item.id)"
                     class="ml-1 btn btn-sm btn-red"
                     v-if="
-                      (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+                      (pelatihan.status_id == 2 ||
+                        pelatihan.status_id == 3 ||
+                        pelatihan.status_id == 7) &&
                       hasRolesID([pelatihan.status.role_id])
                     "
                   >
@@ -480,7 +497,9 @@
         @submit.prevent="saveBobot"
         method="post"
         v-if="
-          (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+          (pelatihan.status_id == 2 ||
+            pelatihan.status_id == 3 ||
+            pelatihan.status_id == 7) &&
           hasRolesID([pelatihan.status.role_id])
         "
       >
@@ -640,6 +659,14 @@
           </div>
         </Modal>
       </form>
+      <div class="text-right mt-3" v-if="pelatihan.status_id == 6">
+        <a
+          target="_blank"
+          :href="route('peserta.export', pelatihan.slug)"
+          class="btn btn-md btn-teal"
+          ><ArrowDownTrayIcon class="h-5 w-5 mr-2" />Export Peserta</a
+        >
+      </div>
       <div
         class="bg-white shadow rounded-lg mt-3 border-t-2 border-sky-500"
         v-if="pelatihan.status_id > 1"
@@ -717,7 +744,9 @@
               >
                 <option value="">Semua</option>
                 <option value="registered">Terdaftar</option>
-                <option value="unregistered">Tidak Terdaftar</option>
+                <option value="unregistered" v-if="hasRolesID([2, 3])">
+                  Tidak Terdaftar
+                </option>
                 <option value="confirmed">Dikonfirmasi</option>
                 <option value="approved">Disetujui</option>
                 <option value="rejected">Ditolak</option>
@@ -733,14 +762,16 @@
                   sm:text-sm
                   bg-sky-50
                   text-gray-500 text-sm
-                  border-gray-300
+                  border-gray-300 border-r-transparent
                 "
                 v-model="filter.key"
               >
                 <option value="nip">NIP</option>
                 <option value="nama">Nama</option>
                 <option value="jabatan">Jabatan</option>
-                <option value="jumlah_bobot">Jumlah Bobot</option>
+                <option value="jumlah_bobot" v-if="hasRolesID([2, 3])">
+                  Jumlah Bobot
+                </option>
               </select>
               <input
                 @keyup.enter="filters"
@@ -803,7 +834,11 @@
                   Status
                 </th>
                 <th
-                  v-if="pelatihan.status_id > 1 && bobots.length > 0"
+                  v-if="
+                    pelatihan.status_id > 1 &&
+                    bobots.length > 0 &&
+                    hasRolesID([2, 3])
+                  "
                   scope="col"
                   class="
                     pl-3
@@ -957,7 +992,11 @@
                 </td>
                 <td
                   class="pl-3 pr-6 py-2 align-top text-right"
-                  v-if="pelatihan.status_id > 1 && bobots.length > 0"
+                  v-if="
+                    pelatihan.status_id > 1 &&
+                    bobots.length > 0 &&
+                    hasRolesID([2, 3])
+                  "
                 >
                   {{ item.pendaftaran[0].jumlah_bobot }}
                 </td>
@@ -965,7 +1004,7 @@
             </tbody>
             <tfoot
               class="bg-gray-50 divide-y divide-gray-200"
-              v-if="pelatihan.status_id > 1"
+              v-if="pelatihan.status_id > 1 && hasRolesID([2, 3])"
             >
               <tr>
                 <td class="pl-6 pr-3 py-2 align-top" colspan="5">
@@ -1057,6 +1096,7 @@ import {
   TrashIcon,
   PaperAirplaneIcon,
   UsersIcon,
+  ArrowDownTrayIcon,
 } from "@heroicons/vue/24/solid";
 
 export default defineComponent({
@@ -1080,6 +1120,7 @@ export default defineComponent({
     TrashIcon,
     PaperAirplaneIcon,
     UsersIcon,
+    ArrowDownTrayIcon,
   },
   props: {
     title: String,
@@ -1242,9 +1283,9 @@ export default defineComponent({
         }
       });
     },
-    reject(status) {
+    batalkanPelatihan() {
       Swal.fire({
-        title: "Alasan Penolakan",
+        title: "Alasan Pembatalan",
         input: "textarea",
         inputAttributes: {
           autocapitalize: "off",
@@ -1257,7 +1298,7 @@ export default defineComponent({
         preConfirm: function (value) {
           if (!value) {
             Swal.showValidationMessage(
-              `Silahkan mengisi alasan penolakan terlebih dahulu`
+              `Silahkan mengisi alasan pembatalan terlebih dahulu`
             );
           } else {
             return value;
@@ -1267,7 +1308,7 @@ export default defineComponent({
       }).then((result) => {
         if (result.isConfirmed) {
           Swal.fire({
-            text: "Apakah anda yakin akan menolak data pelatihan ini ?",
+            text: "Apakah anda yakin akan membatalkan  pelatihan ini ?",
             icon: "question",
             confirmButtonText: "Ya, Lanjutkan",
             cancelButtonText: "Batalkan",
@@ -1279,7 +1320,7 @@ export default defineComponent({
               this.$inertia.post(
                 this.route("pelatihan.process", this.pelatihan.slug),
                 {
-                  status_id: status,
+                  status_id: 7,
                   keterangan: result.value,
                 },
                 {

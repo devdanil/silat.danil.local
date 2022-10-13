@@ -22,7 +22,7 @@
           <NewspaperIcon class="h-6 w-6 mr-2" />Daftar Pelatihan
         </h2>
       </div>
-      <div class="px-4 py-2 border-b bg-gray-50 overflow-auto">
+      <div class="px-4 py-2 bg-gray-50 overflow-auto">
         <div class="mt-1 flex flex-col sm:flex-row">
           <div class="rounded-md flex">
             <span
@@ -73,7 +73,24 @@
             >
               Tahun
             </span>
-
+            <select
+              @change.prevent="filter.year ? filters : ''"
+              class="
+                focus:ring-sky-500 focus:border-sky-500
+                w-full
+                sm:w-auto
+                rounded-none
+                sm:text-sm
+                border-gray-300 border-r-transparent
+              "
+              v-model="filter.key_year"
+            >
+              <option value="mulai_pendaftaran">Mulai Pendaftaran</option>
+              <option value="selesai_pendaftaran">Selesai Pendaftaran</option>
+              <option value="mulai_pelatihan">Mulai Pelatihan</option>
+              <option value="selesai_pelatihan">Selesai Pelatihan</option>
+              <option value="batas_konfirmasi">Batas Konfirmasi</option>
+            </select>
             <select
               @change.prevent="filters"
               class="
@@ -92,7 +109,7 @@
               </option>
             </select>
           </div>
-          <div class="rounded-md flex pt-3 sm:pt-0 sm:ml-3">
+          <!--      <div class="rounded-md flex pt-3 sm:pt-0 sm:ml-3">
             <span
               class="
                 inline-flex
@@ -106,6 +123,24 @@
             >
               Bulan
             </span>
+            <select
+              @change.prevent="filters"
+              class="
+                focus:ring-sky-500 focus:border-sky-500
+                w-full
+                sm:w-auto
+                rounded-none
+                sm:text-sm
+                border-gray-300 border-r-transparent
+              "
+              v-model="filter.key_month"
+            >
+              <option value="mulai_pendaftaran">Mulai Pendaftaran</option>
+              <option value="selesai_pendaftaran">Selesai Pendaftaran</option>
+              <option value="mulai_pelatihan">Mulai Pelatihan</option>
+              <option value="selesai_pelatihan">Selesai Pelatihan</option>
+              <option value="batas_konfirmasi">Batas Konfirmasi</option>
+            </select>
 
             <select
               @change.prevent="filters"
@@ -124,7 +159,7 @@
                 {{ bulan[item - 1] }}
               </option>
             </select>
-          </div>
+          </div> -->
 
           <div class="rounded-md flex pt-3 sm:pt-0 sm:ml-3">
             <span
@@ -167,12 +202,14 @@
             <input
               @keyup.enter="filters"
               type="text"
+              placeholder="Cari judul.."
               v-model="filter.search"
               class="
                 focus:ring-sky-500 focus:border-sky-500
                 w-full
                 sm:w-auto
                 rounded-none rounded-l-md
+                placeholder:text-gray-400
                 sm:text-sm
                 border-gray-300
               "
@@ -198,19 +235,61 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="text-left th">No.</th>
-              <th scope="col" class="text-left th">Judul Pelatihan</th>
-              <th scope="col" class="text-left th">Mulai Pelatihan</th>
-              <th scope="col" class="text-left th">Selesai Pelatihan</th>
-              <th scope="col" class="text-left th">Kuota</th>
-              <th scope="col" class="text-left th">Status</th>
-              <th scope="col" class="th">Aksi</th>
+              <th
+                scope="col"
+                rowspan="2"
+                class="border align-center text-left th"
+              >
+                No.
+              </th>
+              <th
+                scope="col"
+                rowspan="2"
+                class="border align-center text-left th"
+              >
+                Judul Pelatihan
+              </th>
+              <th scope="col" colspan="2" class="border text-center th">
+                Tanggal Pendaftaran
+              </th>
+              <th scope="col" colspan="2" class="border text-center th">
+                Tanggal Pelatihan
+              </th>
+              <th
+                scope="col"
+                rowspan="2"
+                class="border align-center text-left th"
+              >
+                Batas Konfirmasi
+              </th>
+              <th scope="col" colspan="3" class="border text-center th">
+                Jumlah
+              </th>
+              <th
+                scope="col"
+                rowspan="2"
+                class="border align-center text-left th"
+              >
+                Status
+              </th>
+              <th scope="col" rowspan="2" class="border align-center th">
+                Aksi
+              </th>
+            </tr>
+            <tr>
+              <th scope="col" class="border text-left th">Mulai</th>
+              <th scope="col" class="border text-left th">Selesai</th>
+              <th scope="col" class="border text-left th">Mulai</th>
+              <th scope="col" class="border text-left th">Selesai</th>
+              <th scope="col" class="border text-left th">Kuota</th>
+              <th scope="col" class="border text-left th">Terdaftar</th>
+              <th scope="col" class="border text-left th">Dikonfirmasi</th>
             </tr>
           </thead>
 
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-if="list.total == 0">
-              <td colspan="8" class="text-center px-3 py-2">Kosong</td>
+              <td colspan="12" class="text-center px-3 py-2">Kosong</td>
             </tr>
             <tr v-else v-for="(item, index) in list.data" :key="item.id">
               <td class="td">
@@ -220,13 +299,30 @@
                 {{ item.katalog.judul }}
               </td>
 
-              <td class="td w-1/5">
+              <td class="td whitespace-nowrap">
+                {{ dateIndo(item.mulai_pendaftaran) }}
+              </td>
+              <td class="td whitespace-nowrap">
+                {{ dateIndo(item.selesai_pendaftaran) }}
+              </td>
+              <td class="td whitespace-nowrap">
                 {{ dateIndo(item.mulai_pelatihan) }}
               </td>
               <td class="td whitespace-nowrap">
                 {{ dateIndo(item.selesai_pelatihan) }}
               </td>
-              <td class="td whitespace-nowrap">{{ item.kuota }} Orang</td>
+              <td class="td whitespace-nowrap">
+                {{ dateIndo(item.batas_konfirmasi) }}
+              </td>
+              <td class="td whitespace-nowrap">
+                {{ item.kuota ? item.kuota + " Orang" : "0" }}
+              </td>
+              <td class="td whitespace-nowrap">
+                {{ item.terdaftar ? item.terdaftar + " Orang" : "0" }}
+              </td>
+              <td class="td whitespace-nowrap">
+                {{ item.konfirmasi ? item.konfirmasi + " Orang" : "0" }}
+              </td>
 
               <td class="td whitespace-nowrap">
                 <span
@@ -408,15 +504,21 @@ export default defineComponent({
       return result;
     },
     dateIndo(param) {
-      param = new Date(param);
-      let result =
-        "" +
-        (param.getDate() > 9 ? "" : "0") +
-        param.getDate() +
-        " " +
-        this.bulan[param.getMonth()] +
-        " " +
-        param.getFullYear();
+      let result = param;
+      if (param) {
+        param = new Date(param);
+        result =
+          "" +
+          (param.getDate() > 9 ? "" : "0") +
+          param.getDate() +
+          " " +
+          this.bulan[param.getMonth()] +
+          " " +
+          param.getFullYear();
+      } else {
+        result = "-";
+      }
+
       return result;
     },
   },

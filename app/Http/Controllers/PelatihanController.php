@@ -32,11 +32,13 @@ class PelatihanController extends Controller
             'limit' => $request->get('limit') ?? 10,
             'search' => $request->get('search'),
             'status' => $request->get('status') ?? "",
+            'key_year' => $request->get('key_year') ?? "mulai_pendaftaran",
             'year' => $request->get('year') ?? "",
             'month' => $request->get('month') ?? "",
+            'key_month' => $request->get('key_month') ?? "mulai_pendaftaran"
         ];
 
-        $data['list'] = Pelatihan::select('mulai_pendaftaran', 'selesai_pendaftaran', 'mulai_pelatihan', 'selesai_pelatihan',  'kuota',  'slug', 'status_id', 'katalog_id', 'created_by')->whereHas('katalog', function ($query) use ($data) {
+        $data['list'] = Pelatihan::select('mulai_pendaftaran', 'selesai_pendaftaran', 'mulai_pelatihan', 'selesai_pelatihan', 'batas_konfirmasi',  'kuota',  'slug', 'status_id', 'katalog_id', 'created_by')->whereHas('katalog', function ($query) use ($data) {
             $query->when($data['filter']['search'], function ($query2) use ($data) {
                 $query2->where('judul', 'like', '%' . $data['filter']['search'] . '%');
             });
@@ -46,9 +48,11 @@ class PelatihanController extends Controller
             });
         })->when($data['filter']['year'], function ($query) use ($data) {
             $query->whereYear('mulai_pelatihan', $data['filter']['year']);
-        })->when($data['filter']['month'], function ($query) use ($data) {
-            $query->whereMonth('mulai_pelatihan', $data['filter']['month']);
-        })->with(['status', 'katalog'])->orderByDesc('id')->paginate($data['filter']['limit'])->appends($data['filter']);
+        })->with(['status:id,name,role_id', 'katalog:id,judul'])->withCount(['pendaftaran as terdaftar' => function ($query) {
+            $query->whereNotNull('registered_at');
+        }, 'pendaftaran as konfirmasi' => function ($query) {
+            $query->whereNotNull('confirmed_at')->whereNotNull('sendmail_at');
+        }])->orderByDesc('id')->paginate($data['filter']['limit'])->appends($data['filter']);
         $data['years'] = range(date('Y'), 2020);
         $data['months'] = range(1, 12);
         $data['status'] = Status::orderBy('id', 'ASC')->get(['slug', 'name']);
@@ -113,6 +117,8 @@ class PelatihanController extends Controller
                     $query2->whereNotNull('registered_at')->whereNull('confirmed_at');
                 })->when($filter['status'] == "unregistered", function ($query2) {
                     $query2->whereNull('registered_at');
+                })->when(!Auth::user()->hasRolesID([2, 3]), function ($query2) {
+                    $query2->whereNotNull('registered_at');
                 });
         })->when($filter['search'], function ($query) use ($filter) {
             if ($filter['key'] == 'jabatan') {

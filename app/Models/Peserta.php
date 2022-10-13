@@ -33,4 +33,14 @@ class Peserta extends Model
     {
         return $this->hasMany(Pendaftaran::class, 'nip', 'nip');
     }
+
+    public function asalKota()
+    {
+        return $this->belongsTo(Kota::class, 'id_kota_rumah', 'id');
+    }
+
+    public function asalProv()
+    {
+        return $this->belongsTo(Provinsi::class, 'id_provinsi_rumah', 'id');
+    }
 }
