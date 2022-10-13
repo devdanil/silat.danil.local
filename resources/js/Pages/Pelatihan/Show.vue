@@ -56,6 +56,31 @@
         >
           <PaperAirplaneIcon class="h-5 w-5 mr-2" /> Submit Pelatihan
         </button>
+
+        <div
+          v-if="
+            (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+            hasRolesID([1]) &&
+            status.registered == 0 &&
+            new Date(today).getTime() >
+              new Date(pelatihan.selesai_pendaftaran).getTime()
+          "
+        >
+          <button
+            type="button"
+            @click.prevent="tanggalPendaftaran"
+            class="btn btn-md btn-yellow ml-1"
+          >
+            <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal Pendaftaran
+          </button>
+          <button
+            type="button"
+            @click.prevent="batalkanPelatihan"
+            class="btn btn-md btn-red ml-1"
+          >
+            <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan Pelatihan
+          </button>
+        </div>
         <div
           v-if="
             pelatihan.status_id == 4 &&
@@ -66,6 +91,7 @@
         >
           <button
             type="button"
+            v-if="status.registered > 0 || status.confirmed > 0"
             @click.prevent="batasKonfirmasi"
             class="btn btn-md btn-sky"
           >
@@ -464,12 +490,6 @@
                         (bobot.bobot = item.bobot)
                     "
                     class="ml-1 btn btn-sm btn-yellow"
-                    v-if="
-                      (pelatihan.status_id == 2 ||
-                        pelatihan.status_id == 3 ||
-                        pelatihan.status_id == 7) &&
-                      hasRolesID([pelatihan.status.role_id])
-                    "
                   >
                     <PencilSquareIcon class="h-5 w-5" />
                   </button>
@@ -478,12 +498,6 @@
                     type="button"
                     @click="deleteBobot(item.id)"
                     class="ml-1 btn btn-sm btn-red"
-                    v-if="
-                      (pelatihan.status_id == 2 ||
-                        pelatihan.status_id == 3 ||
-                        pelatihan.status_id == 7) &&
-                      hasRolesID([pelatihan.status.role_id])
-                    "
                   >
                     <TrashIcon class="h-5 w-5" />
                   </button>
