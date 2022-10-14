@@ -207,6 +207,12 @@ export default defineComponent({
           icon: "warning",
           confirmButtonColor: "#0ea5e9",
         });
+      } else if (d2.getTime() >= d3.getTime()) {
+        Swal.fire({
+          text: "Tanggal selesai pendaftaran tidak boleh sama atau lebih besar dari tanggal mulai pelatihan",
+          icon: "warning",
+          confirmButtonColor: "#0ea5e9",
+        });
       } else {
         Swal.fire({
           text: "Apakah anda yakin akan menyimpan data ini ?",

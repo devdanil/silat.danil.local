@@ -55,7 +55,7 @@ class PelatihanController extends Controller
         }])->orderByDesc('id')->paginate($data['filter']['limit'])->appends($data['filter']);
         $data['years'] = range(date('Y'), 2020);
         $data['months'] = range(1, 12);
-        $data['status'] = Status::orderBy('id', 'ASC')->get(['slug', 'name']);
+        $data['status'] = Status::orderBy('order', 'ASC')->get(['slug', 'name']);
         return Inertia::render('Pelatihan/Index', $data);
     }
 

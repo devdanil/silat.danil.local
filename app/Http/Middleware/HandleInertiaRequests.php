@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
         })->orderBy('order', 'asc')->get();
         $task = Pelatihan::whereHas('status', function ($query) use ($rolesID) {
             $query->whereIn('role_id', $rolesID);
-        })->whereNotIn('status_id',  [1, 6])->count();
+        })->whereNotIn('status_id',  [1, 6, 8])->count();
         return array_merge(parent::share($request), [
             'app' => [
                 'name' => env('APP_NAME'),

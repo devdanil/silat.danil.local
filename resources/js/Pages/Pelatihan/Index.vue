@@ -334,14 +334,57 @@
                     tracking-wider
                     rounded-full
                     shadow
+                    bg-violet-200
+                    text-violet-900
+                    shadow-violet-500
+                  "
+                  v-if="
+                    new Date(item.selesai_pelatihan).getTime() >=
+                      new Date(today).getTime() &&
+                    new Date(today).getTime() >=
+                      new Date(item.mulai_pelatihan).getTime()
+                  "
+                  >Pelatihan Sedang Berjalan</span
+                >
+
+                <span
+                  class="
+                    px-2
+                    py-0.5
+                    font-semibold
+                    text-xs
+                    tracking-wider
+                    rounded-full
+                    shadow
+                    bg-teal-200
+                    text-teal-900
+                    shadow-teal-500
+                  "
+                  v-else-if="
+                    new Date(today).getTime() >
+                    new Date(item.selesai_pelatihan).getTime()
+                  "
+                  >Pelatihan Selesai</span
+                >
+                <span
+                  v-else
+                  class="
+                    px-2
+                    py-0.5
+                    font-semibold
+                    text-xs
+                    tracking-wider
+                    rounded-full
+                    shadow
                   "
                   :class="{
                     'bg-sky-200 text-sky-900 shadow-sky-500':
                       item.status_id == 1,
                     'bg-yellow-200 text-yellow-900  shadow-yellow-500':
-                      item.status_id > 1 && item.status_id < 6,
-                    'bg-red-200 text-red-900 shadow-red-500':
+                      (item.status_id > 1 && item.status_id < 6) ||
                       item.status_id == 7,
+                    'bg-red-200 text-red-900 shadow-red-500':
+                      item.status_id == 8,
                     'bg-teal-200 text-teal-900 shadow-teal-500':
                       item.status_id == 6,
                   }"
@@ -442,6 +485,7 @@ export default defineComponent({
     months: Array,
   },
   data() {
+    let curr_date = new Date();
     return {
       bulan: [
         "Januari",
@@ -457,6 +501,12 @@ export default defineComponent({
         "November",
         "Desember",
       ],
+      today:
+        curr_date.getFullYear() +
+        "-" +
+        (curr_date.getMonth() + 1) +
+        "-" +
+        curr_date.getDate(),
     };
   },
   methods: {

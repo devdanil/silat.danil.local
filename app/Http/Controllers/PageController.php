@@ -18,7 +18,7 @@ class PageController extends Controller
         $data['count']['new']       =  $pelatihan->where('status_id', 1)->count();
         $data['count']['progress']  =  $pelatihan->whereIn('status_id', [2, 3, 4, 5])->count();
         $data['count']['canceled']    =  $pelatihan->where('status_id', 8)->count();
-        $data['count']['runnixng']   =  Pelatihan::whereYear('created_at', $data['filter']['year'])->whereDate('mulai_pelatihan', '<=', date("Y-m-d"))->whereDate('selesai_pelatihan', '>=', date("Y-m-d"))->count();
+        $data['count']['running']   =  Pelatihan::whereYear('created_at', $data['filter']['year'])->whereDate('mulai_pelatihan', '<=', date("Y-m-d"))->whereDate('selesai_pelatihan', '>=', date("Y-m-d"))->count();
         $data['count']['finish']   =  Pelatihan::whereYear('created_at', $data['filter']['year'])->whereDate('selesai_pelatihan', '<', date("Y-m-d"))->count();
 
         $data['pelatihan'] = [];

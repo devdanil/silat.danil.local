@@ -41,102 +41,121 @@
         <Link :href="route('pelatihan.index')" class="btn btn-md btn-slate"
           ><ChevronLeftIcon class="w-5 h-5 mr-2" />Kembali</Link
         >
-        <button
-          type="button"
-          @click.prevent="submit(pelatihan.status.next_id)"
-          class="btn btn-md btn-teal"
-          v-if="
-            (pelatihan.status_id == 1 ||
-              ((pelatihan.status_id == 2 ||
-                pelatihan.status_id == 3 ||
-                pelatihan.status_id == 7) &&
-                bobots.length > 0)) &&
-            hasRolesID([pelatihan.status.role_id])
-          "
-        >
-          <PaperAirplaneIcon class="h-5 w-5 mr-2" /> Submit Pelatihan
-        </button>
-
-        <div
-          v-if="
-            (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
-            hasRolesID([1]) &&
-            status.registered == 0 &&
-            new Date(today).getTime() >
-              new Date(pelatihan.selesai_pendaftaran).getTime()
-          "
-        >
-          <button
-            type="button"
-            @click.prevent="tanggalPendaftaran"
-            class="btn btn-md btn-yellow ml-1"
-          >
-            <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal Pendaftaran
-          </button>
-          <button
-            type="button"
-            @click.prevent="batalkanPelatihan"
-            class="btn btn-md btn-red ml-1"
-          >
-            <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan Pelatihan
-          </button>
-        </div>
-        <div
-          v-if="
-            pelatihan.status_id == 4 &&
-            new Date(today).getTime() >
-              new Date(pelatihan.selesai_pendaftaran).getTime() &&
-            hasRolesID([pelatihan.status.role_id])
-          "
-        >
-          <button
-            type="button"
-            v-if="status.registered > 0 || status.confirmed > 0"
-            @click.prevent="batasKonfirmasi"
-            class="btn btn-md btn-sky"
-          >
-            <CheckIcon class="h-5 w-5 mr-2" /> Lanjutkan Pelatihan
-          </button>
-          <button
-            type="button"
-            v-if="pelatihan.kuota > status.registered"
-            @click.prevent="tanggalPendaftaran"
-            class="btn btn-md btn-yellow ml-1"
-          >
-            <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal Pendaftaran
-          </button>
-          <button
-            type="button"
-            v-if="pelatihan.kuota > status.registered"
-            @click.prevent="batalkanPelatihan"
-            class="btn btn-md btn-red ml-1"
-          >
-            <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan Pelatihan
-          </button>
-        </div>
-        <div
-          v-if="
-            pelatihan.status_id == 5 &&
-            hasRolesID([pelatihan.status.role_id]) &&
-            new Date(today).getTime() >
-              new Date(pelatihan.batas_konfirmasi).getTime()
-          "
-        >
+        <div class="flex flex-col sm:flex-row">
           <button
             type="button"
             @click.prevent="submit(pelatihan.status.next_id)"
-            class="btn btn-md btn-sky"
+            class="btn btn-md btn-teal"
+            v-if="
+              (pelatihan.status_id == 1 ||
+                ((pelatihan.status_id == 2 ||
+                  pelatihan.status_id == 3 ||
+                  pelatihan.status_id == 7) &&
+                  bobots.length > 0)) &&
+              hasRolesID([pelatihan.status.role_id])
+            "
           >
-            <CheckIcon class="h-5 w-5 mr-2" /> Lanjutkan Pelatihan
+            <PaperAirplaneIcon class="h-5 w-5 mr-2" /> Submit Pelatihan
           </button>
-          <button
-            v-if="pelatihan.kuota > status.confirmed"
-            type="button"
-            @click.prevent="batasKonfirmasi()"
-            class="btn btn-md btn-yellow ml-1"
+
+          <div
+            v-if="
+              (pelatihan.status_id == 2 || pelatihan.status_id == 3) &&
+              hasRolesID([1]) &&
+              status.registered == 0 &&
+              new Date(today).getTime() >
+                new Date(pelatihan.selesai_pendaftaran).getTime()
+            "
           >
-            <PencilSquareIcon class="h-5 w-5 mr-2" /> Batas Konfirmasi
-          </button>
+            <button
+              type="button"
+              @click.prevent="tanggalPendaftaran"
+              class="btn btn-md btn-yellow ml-1"
+            >
+              <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal Pendaftaran
+            </button>
+            <button
+              type="button"
+              @click.prevent="batalkanPelatihan"
+              class="btn btn-md btn-red ml-1"
+            >
+              <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan Pelatihan
+            </button>
+          </div>
+          <div
+            v-if="
+              pelatihan.status_id == 4 &&
+              new Date(today).getTime() >
+                new Date(pelatihan.selesai_pendaftaran).getTime() &&
+              hasRolesID([pelatihan.status.role_id])
+            "
+          >
+            <button
+              type="button"
+              v-if="status.registered > 0 || status.confirmed > 0"
+              @click.prevent="batasKonfirmasi"
+              class="btn btn-md btn-sky"
+            >
+              <CheckIcon class="h-5 w-5 mr-2" /> Lanjutkan Pelatihan
+            </button>
+            <button
+              type="button"
+              v-if="pelatihan.kuota > status.registered"
+              @click.prevent="tanggalPendaftaran"
+              class="btn btn-md btn-yellow ml-1"
+            >
+              <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal Pendaftaran
+            </button>
+            <button
+              type="button"
+              v-if="status.registered == 0 && status.confirmed == 0"
+              @click.prevent="batalkanPelatihan"
+              class="btn btn-md btn-red ml-1"
+            >
+              <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan Pelatihan
+            </button>
+          </div>
+          <div
+            v-if="
+              pelatihan.status_id == 5 &&
+              hasRolesID([pelatihan.status.role_id]) &&
+              new Date(today).getTime() >
+                new Date(pelatihan.batas_konfirmasi).getTime()
+            "
+          >
+            <button
+              v-if="status.confirmed > 0"
+              type="button"
+              @click.prevent="submit(pelatihan.status.next_id)"
+              class="btn btn-md btn-sky"
+            >
+              <CheckIcon class="h-5 w-5 mr-2" /> Lanjutkan Pelatihan
+            </button>
+            <button
+              v-if="pelatihan.kuota > status.confirmed"
+              type="button"
+              @click.prevent="batasKonfirmasi()"
+              class="btn btn-md btn-yellow ml-1"
+            >
+              <PencilSquareIcon class="h-5 w-5 mr-2" /> Batas Konfirmasi
+            </button>
+            <button
+              v-if="pelatihan.kuota > status.confirmed"
+              type="button"
+              @click.prevent="revisiPembobotan(pelatihan.status.prev_id)"
+              class="btn btn-md btn-violet ml-1"
+            >
+              <ScaleIcon class="h-5 w-5 mr-2" /> Revisi Pembobotan
+            </button>
+            <button
+              type="button"
+              v-if="status.confirmed == 0"
+              @click.prevent="batalkanPelatihan"
+              class="btn btn-md btn-red ml-1"
+            >
+              <XMarkIcon class="h-5 w-5 mr-2" /> Batalkan Pelatihan
+            </button>
+          </div>
         </div>
       </div>
       <div class="bg-white shadow rounded-lg border-t-2 border-sky-500">
@@ -296,14 +315,56 @@
                     tracking-wider
                     rounded-full
                     shadow
+                    bg-violet-200
+                    text-violet-900
+                    shadow-violet-500
+                  "
+                  v-if="
+                    new Date(pelatihan.selesai_pelatihan).getTime() >=
+                      new Date(today).getTime() &&
+                    new Date(today).getTime() >=
+                      new Date(pelatihan.mulai_pelatihan).getTime()
+                  "
+                  >Pelatihan Sedang Berjalan</span
+                >
+                <span
+                  class="
+                    px-2
+                    py-0.5
+                    font-semibold
+                    text-xs
+                    tracking-wider
+                    rounded-full
+                    shadow
+                    bg-teal-200
+                    text-teal-900
+                    shadow-teal-500
+                  "
+                  v-else-if="
+                    new Date(today).getTime() >
+                    new Date(pelatihan.selesai_pelatihan).getTime()
+                  "
+                  >Pelatihan Selesai</span
+                >
+                <span
+                  v-else
+                  class="
+                    px-2
+                    py-0.5
+                    font-semibold
+                    text-xs
+                    tracking-wider
+                    rounded-full
+                    shadow
                   "
                   :class="{
                     'bg-sky-200 text-sky-900 shadow-sky-500':
                       pelatihan.status_id == 1,
                     'bg-yellow-200 text-yellow-900  shadow-yellow-500':
-                      pelatihan.status_id > 1 && pelatihan.status_id < 6,
-                    'bg-red-200 text-red-900 shadow-red-500':
+                      (pelatihan.status_id > 1 && pelatihan.status_id < 6) ||
                       pelatihan.status_id == 7,
+                    'bg-red-200 text-red-900 shadow-red-500':
+                      pelatihan.status_id == 8,
                     'bg-teal-200 text-teal-900 shadow-teal-500':
                       pelatihan.status_id == 6,
                   }"
@@ -311,7 +372,7 @@
                 >
               </td>
             </tr>
-            <tr class="bg-gray-50" v-if="pelatihan.status_id == 7">
+            <tr class="bg-gray-50" v-if="pelatihan.status_id == 8">
               <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
                 Alasan Pembatalan
               </td>
@@ -1111,6 +1172,7 @@ import {
   PaperAirplaneIcon,
   UsersIcon,
   ArrowDownTrayIcon,
+  ScaleIcon,
 } from "@heroicons/vue/24/solid";
 
 export default defineComponent({
@@ -1135,6 +1197,7 @@ export default defineComponent({
     PaperAirplaneIcon,
     UsersIcon,
     ArrowDownTrayIcon,
+    ScaleIcon,
   },
   props: {
     title: String,
@@ -1167,9 +1230,9 @@ export default defineComponent({
       },
       today:
         curr_date.getFullYear() +
-        "/" +
+        "-" +
         (curr_date.getMonth() + 1) +
-        "/" +
+        "-" +
         curr_date.getDate(),
       bulan: [
         "Januari",
@@ -1334,7 +1397,7 @@ export default defineComponent({
               this.$inertia.post(
                 this.route("pelatihan.process", this.pelatihan.slug),
                 {
-                  status_id: 7,
+                  status_id: 8,
                   keterangan: result.value,
                 },
                 {
@@ -1347,9 +1410,16 @@ export default defineComponent({
       });
     },
     tanggalPendaftaran() {
+      let mulai_pendaftaran = this.pelatihan.mulai_pendaftaran;
+      let selesai_pendaftaran = this.pelatihan.selesai_pendaftaran;
       Swal.fire({
         title: "Tanggal Pendaftaran Pelatihan",
-        html: '<input type="date" class="focus:ring-sky-300 focus:border-sky-400 w-full rounded-lg text-xl border-gray-300 px-6 py-2" id="mulai-pendaftaran"><div class="py-2">Sampai Dengan</div><input type="date" class="focus:ring-sky-300 focus:border-sky-400 w-full rounded-lg text-xl border-gray-300 px-6 py-2" id="selesai-pendaftaran">',
+        html:
+          '<input type="date" class="focus:ring-sky-300 focus:border-sky-400 w-full rounded-lg text-xl border-gray-300 px-6 py-2" id="mulai-pendaftaran" value="' +
+          mulai_pendaftaran +
+          '"><div class="py-2">Sampai Dengan</div><input type="date" class="focus:ring-sky-300 focus:border-sky-400 w-full rounded-lg text-xl border-gray-300 px-6 py-2" id="selesai-pendaftaran" value="' +
+          selesai_pendaftaran +
+          '">',
         stopKeydownPropagation: false,
         showCancelButton: true,
         confirmButtonText: "Submit",
@@ -1408,6 +1478,7 @@ export default defineComponent({
     },
     batasKonfirmasi() {
       let today = this.today;
+      let mulai_pelatihan = this.pelatihan.mulai_pelatihan;
       Swal.fire({
         title: "Batas Waktu Konfirmasi",
         html:
@@ -1429,6 +1500,12 @@ export default defineComponent({
             );
           } else if (new Date(batas).getTime() < new Date(today).getTime()) {
             Swal.showValidationMessage("Batas konfirmasi sudah berlalu");
+          } else if (
+            new Date(batas).getTime() >= new Date(mulai_pelatihan).getTime()
+          ) {
+            Swal.showValidationMessage(
+              "Batas Konfirmasi tidak boleh sama atau lebih besar dari Mulai Pelatihan"
+            );
           } else {
             return batas;
           }
@@ -1449,7 +1526,7 @@ export default defineComponent({
               this.$inertia.post(
                 this.route("pelatihan.process", this.pelatihan.slug),
                 {
-                  status_id: this.pelatihan.status.next_id,
+                  status_id: 5,
                   batas_konfirmasi: result.value,
                 },
                 {
@@ -1458,6 +1535,29 @@ export default defineComponent({
               );
             }
           });
+        }
+      });
+    },
+    revisiPembobotan(status) {
+      Swal.fire({
+        text: "Apakah anda yakin akan merevisi pembobotan pelatihan ini?",
+        icon: "question",
+        confirmButtonText: "Ya, Lanjutkan",
+        cancelButtonText: "Batalkan",
+        showCancelButton: true,
+        confirmButtonColor: "#0ea5e9",
+        cancelButtonColor: "#ef4444",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$inertia.post(
+            this.route("pelatihan.process", this.pelatihan.slug),
+            {
+              status_id: status,
+            },
+            {
+              only: ["pelatihan", "peserta", "flash", "errors"],
+            }
+          );
         }
       });
     },
