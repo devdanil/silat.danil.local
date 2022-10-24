@@ -18,7 +18,7 @@
                 ><PlusIcon class="mr-2 h-5 w-5" />Katalog</Link
             >
         </div>
-        <div class="bg-white shadow rounded-lg border-t-2 border-sky-500 mb-10">
+        <div class="bg-white shadow rounded-lg border-t-2 border-sky-500">
             <div class="px-4 py-5 border-b">
                 <h2
                     class="text-lg leading-6 font-medium inline-flex items-center"

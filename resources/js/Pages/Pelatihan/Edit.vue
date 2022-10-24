@@ -21,7 +21,7 @@
                 </div>
             </li>
         </template>
-        <div class="mb-10">
+        <div>
             <Link
                 :href="route('pelatihan.index')"
                 class="btn btn-md btn-slate mb-3"

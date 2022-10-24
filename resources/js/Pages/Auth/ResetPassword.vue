@@ -48,7 +48,7 @@
                         />
                     </div>
                     <div class="mt-3">
-                        <label class="text-gray-600">Password</label>
+                        <label class="text-gray-600">New Password</label>
                         <div class="relative">
                             <button
                                 type="button"

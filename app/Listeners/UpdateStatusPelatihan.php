@@ -9,10 +9,14 @@ use Illuminate\Support\Facades\Auth;
 class UpdateStatusPelatihan
 {
 
-    public function handle($event)
-    {
-        $data = $event->data;
-        $data['updated_by'] = Auth::id();
-        $event->pelatihan->update($data);
+  public function handle($event)
+  {
+    $data = $event->data;
+    if (isset($data['surat_pemanggilan'])) {
+      $data['surat_pemanggilan']->store('public/surat/pemanggilan/');
+      $data['surat_pemanggilan'] = asset('storage/surat/pemanggilan/' .  $data['surat_pemanggilan']->hashName());
     }
+    $data['updated_by'] = Auth::id();
+    $event->pelatihan->update($data);
+  }
 }

@@ -60,8 +60,7 @@
                         <Link
                             :href="route('password.request')"
                             :only="['captcha']"
-                            as="button"
-                            class="btn-yellow px-3 py-2 text-white justify-center rounded-r focus:outline-none"
+                            class="flex items-center btn-yellow px-3 py-2 text-white justify-center rounded-r focus:outline-none"
                             preserve-state
                             preserve-scroll
                         >

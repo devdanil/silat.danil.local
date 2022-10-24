@@ -21,7 +21,7 @@
                 </div>
             </li>
         </template>
-        <div class="mb-10">
+        <div>
             <Link :href="route('users.index')" class="btn btn-md btn-slate mb-3"
                 ><ChevronLeftIcon class="w-5 h-5 mr-2" />Kembali</Link
             >
