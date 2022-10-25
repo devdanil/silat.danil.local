@@ -12,6 +12,7 @@ class UpdateStatusPelatihan
   public function handle($event)
   {
     $data = $event->data;
+    $data['keterangan'] = isset($data['keterangan']) ? $data['keterangan'] : null;
     if (isset($data['surat_pemanggilan'])) {
       $data['surat_pemanggilan']->store('public/surat/pemanggilan/');
       $data['surat_pemanggilan'] = asset('storage/surat/pemanggilan/' .  $data['surat_pemanggilan']->hashName());

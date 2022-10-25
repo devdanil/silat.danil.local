@@ -33,7 +33,7 @@ class PesertaExport implements FromCollection, WithHeadings, WithStyles, WithMap
     })->when(in_array($this->pelatihan->status_id, [4, 5]), function ($query) {
       $query->whereNotNull('registered_at');
     })->with('peserta', function ($query) {
-      $query->select('nip', 'nama_lengkap', 'gelar_depan', 'gelar_belakang', 'tempat_lahir', 'tgl_lahir', 'kd_jabatan', 'kd_golongan', 'nama_dinas', 'unit_kerja', 'lokasi_dinas', 'id_kota_rumah', 'id_provinsi_rumah', 'pangkat')->with('jabatan:kd_jabatan,jabatan', 'asalKota:id,nama', 'asalProv:id,nama', 'golongan:golongan,pangkat');
+      $query->select('nip', 'nama_lengkap', 'gelar_depan', 'gelar_belakang', 'tempat_lahir',  'kd_jabatan', 'kd_golongan', 'nama_dinas', 'unit_kerja', 'lokasi_dinas', 'id_kota_rumah', 'id_provinsi_rumah', 'pangkat')->with('jabatan:kd_jabatan,jabatan', 'asalKota:id,nama', 'asalProv:id,nama', 'golongan:golongan,pangkat');
     })->orderByDesc('jumlah_bobot')->orderBy('confirmed_at', 'asc')->orderBy('registered_at', 'asc')->get();
 
     $this->columns = 10;
@@ -50,8 +50,31 @@ class PesertaExport implements FromCollection, WithHeadings, WithStyles, WithMap
 
   public function map($item): array
   {
+    $tgl_lahir = '';
+    $months = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+    try {
+      $tahun = substr($item->peserta->nip, 0, 4);
+      $bulan = intval(substr($item->peserta->nip, 4, 2));
+      $tgl = substr($item->peserta->nip, 6, 2);
+      $tgl_lahir = $tgl . ' ' . $months[$bulan - 1] . ' ' . $tahun;
+    } catch (\Throwable $th) {
+      //throw $th;
+    }
     return [
-      ($item->peserta->gelar_depan ? $item->peserta->gelar_depan . '. ' : '') . $item->peserta->nama_lengkap . ($item->peserta->gelar_belakang ? ', ' . $item->peserta->gelar_belakang : ''), " " . $item->nip, $item->peserta->tempat_lahir . ', ' . $item->peserta->tgl_lahir, ($item->peserta->golongan ? $item->peserta->golongan->pangkat . ', ' . '(' . $item->peserta->golongan->golongan . ')' : $item->peserta->pangkat), $item->peserta->jabatan->jabatan, ($item->peserta->lokasi_dinas == "uml" ? $item->peserta->nama_dinas : $item->peserta->unit_kerja), $this->pelatihan->katalog->judul, $this->pelatihan->mulai_pelatihan . ' - ' . $this->pelatihan->selesai_pelatihan, $item->peserta->asalKota ? $item->peserta->asalKota->nama : '-', $item->peserta->asalProv ? $item->peserta->asalProv->nama : '-'
+      ($item->peserta->gelar_depan ? $item->peserta->gelar_depan . '. ' : '') . $item->peserta->nama_lengkap . ($item->peserta->gelar_belakang ? ', ' . $item->peserta->gelar_belakang : ''), " " . $item->nip, $item->peserta->tempat_lahir . ', ' . $tgl_lahir, ($item->peserta->golongan ? $item->peserta->golongan->pangkat . ', ' . '(' . $item->peserta->golongan->golongan . ')' : $item->peserta->pangkat), $item->peserta->jabatan->jabatan, ($item->peserta->lokasi_dinas == "uml" ? $item->peserta->nama_dinas : $item->peserta->unit_kerja), $this->pelatihan->katalog->judul, $this->pelatihan->mulai_pelatihan . ' - ' . $this->pelatihan->selesai_pelatihan, $item->peserta->asalKota ? $item->peserta->asalKota->nama : '-', $item->peserta->asalProv ? $item->peserta->asalProv->nama : '-'
     ];
   }
 

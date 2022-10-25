@@ -181,6 +181,7 @@ class PelatihanController extends Controller
   {
     $data = $request->validate([
       'status_id' => "required",
+      'keterangan' => "max:255",
       'mulai_pendaftaran' => 'date',
       'selesai_pendaftaran' => 'date',
       'batas_konfirmasi' => 'date',
