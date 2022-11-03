@@ -69,7 +69,7 @@
           >
             <button
               type="button"
-              @click.prevent="tanggalPendaftaran('perpanjangan pendaftaran')"
+              @click.prevent="tanggalPendaftaran()"
               class="btn btn-md btn-yellow ml-1"
             >
               <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal Pendaftaran
@@ -101,7 +101,7 @@
             <button
               type="button"
               v-if="pelatihan.kuota > status.registered"
-              @click.prevent="tanggalPendaftaran('perpanjangan pendaftaran')"
+              @click.prevent="tanggalPendaftaran()"
               class="btn btn-md btn-yellow ml-1"
             >
               <PencilSquareIcon class="h-5 w-5 mr-2" /> Tanggal Pendaftaran
@@ -1601,7 +1601,7 @@ export default defineComponent({
         }
       });
     },
-    tanggalPendaftaran(keterangan) {
+    tanggalPendaftaran() {
       let mulai_pendaftaran = this.pelatihan.mulai_pendaftaran;
       let selesai_pendaftaran = this.pelatihan.selesai_pendaftaran;
       Swal.fire({
@@ -1658,7 +1658,7 @@ export default defineComponent({
                   status_id: this.pelatihan.status.prev_id,
                   mulai_pendaftaran: result.value.mulai_pendaftaran,
                   selesai_pendaftaran: result.value.selesai_pendaftaran,
-                  keterangan: keterangan,
+                  keterangan: "perpanjangan pendaftaran",
                 },
                 {
                   only: ["flash", "pelatihan"],
