@@ -21,7 +21,7 @@ class BobotController extends Controller
     {
         $data           = $request->validated();
         $bobot = PelatihanBobot::updateOrCreate(['id' => $request->post('id')], $data);
-        $this->generate_bobot($bobot);
+        $this->generate_bobot($bobot, $request->post('id') != null);
         $request->session()->flash('flash.msg', 'Data berhasil disimpan');
         $request->session()->flash('flash.error', false);
         return back();
@@ -102,7 +102,7 @@ class BobotController extends Controller
                 }
                 Pendaftaran::where('id', $key->id)->update(['jumlah_bobot' => $bobot, 'updated_by' => Auth::id()]);
             }
-            if ($update) {
+            if ($update && count($jumlah_peserta) > 0) {
                 $pelatihan_bobot->update(['jumlah_peserta' => $jumlah_peserta[$pelatihan_bobot->key]]);
             }
         }

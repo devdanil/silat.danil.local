@@ -2,14 +2,12 @@
 
 namespace App\Mail;
 
-use App\Models\Pendaftaran;
-use App\Models\Peserta;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class PendaftaranMail extends Mailable
+class PublishKatalog extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -18,11 +16,11 @@ class PendaftaranMail extends Mailable
      *
      * @return void
      */
-    protected $pendaftaran;
 
-    public function __construct(Pendaftaran $pendaftaran)
+    protected $katalog;
+    public function __construct($katalog)
     {
-        $this->pendaftaran = $pendaftaran->load(['pelatihan', 'peserta']);
+        $this->katalog = $katalog;
     }
 
     /**
@@ -32,8 +30,6 @@ class PendaftaranMail extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.pendaftaran')->with([
-            'pendaftaran' => $this->pendaftaran,
-        ]);
+        return $this->subject('Pemberitahuan Katalog Pelatihan Baru')->markdown('emails.katalog.publish', ['judul' => $this->katalog->judul]);
     }
 }

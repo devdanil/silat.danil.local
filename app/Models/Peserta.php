@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
-class Peserta extends Model
+class Peserta extends Model implements ShouldQueue
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $table = 'tbm_pegawai';
 

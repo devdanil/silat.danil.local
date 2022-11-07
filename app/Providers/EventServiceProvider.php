@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Events\CreatePelatihan;
 use App\Events\KatalogEvent;
 use App\Events\ProcessPelatihan;
+use App\Listeners\PublishKatalog;
 use App\Listeners\StoreJabatan;
 use App\Listeners\StoreLogPelatihan;
 use App\Listeners\StorePendaftaran;
@@ -24,6 +25,7 @@ class EventServiceProvider extends ServiceProvider
         KatalogEvent::class => [
             StoreJabatan::class,
             UploadBahan::class,
+            PublishKatalog::class
         ],
 
         CreatePelatihan::class => [

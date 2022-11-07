@@ -2,7 +2,7 @@
 
 namespace App\Console;
 
-use App\Console\Commands\SendMailPendaftaranCommand;
+// use App\Console\Commands\SendMailPendaftaranCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
@@ -17,12 +17,12 @@ class Kernel extends ConsoleKernel
      */
 
     protected $commands = [
-        SendMailPendaftaranCommand::class
+        // SendMailPendaftaranCommand::class
     ];
 
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('emails:pendaftaran')->when(\App\Models\Pendaftaran::where('sendmail_at', null)->count() > 0)->everyMinute()->withoutOverlapping();
+        // $schedule->command('emails:pendaftaran')->when(\App\Models\Pendaftaran::where('sendmail_at', null)->count() > 0)->everyMinute()->withoutOverlapping();
     }
 
     /**
