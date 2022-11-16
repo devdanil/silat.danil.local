@@ -56,7 +56,8 @@ class StorePendaftaran
       // }
     } else if (in_array($event->pelatihan->status_id, [4, 5]) && $event->pelatihan->selesai_pendaftaran <= date('Y-m-d')) {
       $pendaftaran = Pendaftaran::whereNotNull('registered_at')->whereNull('rejected_at')->whereNull('sendmail_at')->where('pelatihan_id', $event->pelatihan->id)->orderByDesc('jumlah_bobot')->orderBy('registered_at', 'asc')->limit($event->pelatihan->kuota)->get(['id', 'nip']);
-      $peserta = Peserta::select('email')->whereIn('nip', $pendaftaran->pluck('nip')->all())->whereNotNull('email')->get();
+      Pendaftaran::whereIn('id', $pendaftaran->pluck('id')->all())->update(['sendmail_at' => date('Y-m-d H:i:s'), 'updated_by' => Auth::id()]);
+      // $peserta = Peserta::select('email')->whereIn('nip', $pendaftaran->pluck('nip')->all())->whereNotNull('email')->get();
       // $peserta = Peserta::select('email')->whereIn('email', ['devdanil14@gmail.com', 'danilstmik14@gmail.com'])->get();
       // if ($peserta) {
       //   // Notification::send($peserta, new ConfirmationPeserta($event->pelatihan));
@@ -67,7 +68,8 @@ class StorePendaftaran
       $pendaftaran = Pendaftaran::whereNotNull('confirmed_at')->whereNotNull('sendmail_at')->whereNull('rejected_at')->where('pelatihan_id', $event->pelatihan->id)->orderByDesc('jumlah_bobot')->orderBy('confirmed_at', 'asc')->limit($event->pelatihan->kuota)->get(['id', 'nip']);
 
       Pendaftaran::whereNull('confirmed_at')->where('pelatihan_id', $event->pelatihan->id)->update(['rejected_at' => date('Y-m-d H:i:s'), 'updated_by' => Auth::id()]);
-      $peserta = Peserta::select('email')->whereIn('nip', $pendaftaran->pluck('nip')->all())->whereNotNull('email')->get();
+      Pendaftaran::whereIn('id', $pendaftaran->pluck('id')->all())->update(['approved_at' => date('Y-m-d H:i:s'), 'updated_by' => Auth::id()]);
+      // $peserta = Peserta::select('email')->whereIn('nip', $pendaftaran->pluck('nip')->all())->whereNotNull('email')->get();
       // $peserta = Peserta::select('email')->whereIn('email', ['devdanil14@gmail.com', 'danilstmik14@gmail.com'])->get();
       // if ($peserta) {
       //   // Notification::send($peserta, new ApprovedPeserta($event->pelatihan));
