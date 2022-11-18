@@ -102,7 +102,7 @@ class BobotController extends Controller
                 }
                 Pendaftaran::where('id', $key->id)->update(['jumlah_bobot' => $bobot, 'updated_by' => Auth::id()]);
             }
-            if ($update && count($jumlah_peserta) > 0) {
+            if ($update && isset($jumlah_peserta[$pelatihan_bobot->key]) && $jumlah_peserta[$pelatihan_bobot->key] > 0) {
                 $pelatihan_bobot->update(['jumlah_peserta' => $jumlah_peserta[$pelatihan_bobot->key]]);
             }
         }
