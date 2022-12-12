@@ -187,7 +187,11 @@
                 />
               </td>
             </tr>
-            <tr v-if="katalog.ket_jabatan">
+            <tr
+              v-if="
+                ketalog.jenis_pelatihan == 'fungsional' && katalog.ket_jabatan
+              "
+            >
               <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
                 Keterangan Jabatan
               </td>

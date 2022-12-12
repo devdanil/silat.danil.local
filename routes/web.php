@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\BahanController;
 use App\Http\Controllers\BobotController;
 use App\Http\Controllers\EditorController;
+use App\Http\Controllers\HasilController;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\PesertaController;
@@ -39,7 +40,8 @@ Route::middleware('auth')->group(function () {
   Route::resource('pelatihan', PelatihanController::class)->except('update');
   Route::post('pelatihan/{pelatihan}/update', [PelatihanController::class, 'update'])->name('pelatihan.update');
   Route::post('pelatihan/{pelatihan}/process', [PelatihanController::class, 'process'])->name('pelatihan.process');
-
+  Route::get('/pelatihan/export/excel', [PelatihanController::class, 'export'])->name('pelatihan.export');
+  Route::resource('hasil', HasilController::class)->only('index', 'store', 'create');
   Route::delete('bahan/{bahan}', [BahanController::class, 'destroy'])->name('bahan.destroy');
 
   Route::post('/editor/upload', [EditorController::class, 'upload'])->name('editor.upload');

@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Hasil;
 use App\Models\Katalog;
 use App\Models\Pelatihan;
+use App\Policies\HasilPolicy;
 use App\Policies\KatalogPolicy;
 use App\Policies\PelatihanPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -20,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
         Katalog::class => KatalogPolicy::class,
         Pelatihan::class => PelatihanPolicy::class,
+        Hasil::class => HasilPolicy::class,
     ];
 
     /**

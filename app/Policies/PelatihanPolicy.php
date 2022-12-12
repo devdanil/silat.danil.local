@@ -41,4 +41,8 @@ class PelatihanPolicy
     {
         return ($user->hasRolesID([$pelatihan->status->role_id]) && in_array($status_id, [$pelatihan->status->next_id, $pelatihan->status->prev_id])) || ($user->hasRolesID([1]) && in_array($status_id, [2, 3, 5, 8]));
     }
+    public function export(User $user)
+    {
+        return $user->hasRolesID([1]);
+    }
 }

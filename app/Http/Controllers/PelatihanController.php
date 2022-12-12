@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\CreatePelatihan;
 use App\Events\ProcessPelatihan;
+use App\Exports\PelatihanExport;
 use App\Http\Requests\StorePelatihanRequest;
 use App\Models\Jabatan;
 use App\Models\Katalog;
@@ -18,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PelatihanController extends Controller
 {
@@ -193,5 +195,21 @@ class PelatihanController extends Controller
     $request->session()->flash('flash.msg', $status->flash);
     $request->session()->flash('flash.error', false);
     return back();
+  }
+  public function export(Request $request)
+  {
+    $this->authorize('export', Pelatihan::class);
+    $data = $request->validate([
+      'key_year' => 'required',
+      'year' => 'required',
+    ]);
+    $key_year = [
+      'mulai_pendaftaran' => 'Mulai Pendaftaran',
+      'selesai_pendaftaran' => 'Selesai Pendaftaran',
+      'mulai_pelatihan' => 'Mulai Pelatihan',
+      'selesai_pelatihan' => 'Selesai Pelatihan',
+      'batas_konfirmasi' => 'Batas Konfirmasi',
+    ];
+    return Excel::download(new PelatihanExport($data), 'Daftar Pelatihan Tahun ' . $key_year[$data['key_year']] . ' ' . $data['year'] . '.xlsx');
   }
 }
