@@ -38,11 +38,11 @@ class Peserta extends Model implements ShouldQueue
 
     public function asalKota()
     {
-        return $this->belongsTo(Kota::class, 'id_kota_rumah', 'id');
+        return $this->belongsTo(Kota::class, 'id_kota', 'id');
     }
 
     public function asalProv()
     {
-        return $this->belongsTo(Provinsi::class, 'id_provinsi_rumah', 'id');
+        return $this->belongsTo(Provinsi::class, 'id_provinsi', 'id');
     }
 }

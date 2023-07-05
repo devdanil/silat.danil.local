@@ -54,9 +54,9 @@ class HandleInertiaRequests extends Middleware
     })->where('status_id', 5)->whereDate('batas_konfirmasi', '<', date('Y-m-d'))->get(['id']);
     return array_merge(parent::share($request), [
       'app' => [
-        'name' => env('APP_NAME'),
+        'name' => 'Sistem Pelatihan Kemetrologian',
       ],
-      'base_url' => env('APP_URL'),
+      'base_url' => 'https://metrologi.kemendag.go.id/sipelatihan/',
       'auth' => [
         'user' => $request->user(),
         'roles' => [

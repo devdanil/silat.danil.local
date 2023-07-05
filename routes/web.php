@@ -37,9 +37,10 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
   Route::get('/dashboard', [PageController::class, 'dashboard'])->name('dashboard');
-  Route::resource('pelatihan', PelatihanController::class)->except('update');
+  Route::resource('pelatihan', PelatihanController::class)->except(['update','destroy']);
   Route::post('pelatihan/{pelatihan}/update', [PelatihanController::class, 'update'])->name('pelatihan.update');
   Route::post('pelatihan/{pelatihan}/process', [PelatihanController::class, 'process'])->name('pelatihan.process');
+  Route::post('pelatihan/{pelatihan}/destroy', [PelatihanController::class, 'destroy'])->name('pelatihan.destroy');
   Route::get('/pelatihan/export/excel', [PelatihanController::class, 'export'])->name('pelatihan.export');
   Route::resource('hasil', HasilController::class)->only('index', 'store', 'create');
   Route::delete('bahan/{bahan}', [BahanController::class, 'destroy'])->name('bahan.destroy');
@@ -49,15 +50,19 @@ Route::middleware('auth')->group(function () {
 
   Route::get('pelatihan/{pelatihan}/peserta/export', [PesertaController::class, 'export'])->name('peserta.export');
 
-  Route::resource('katalog', KatalogController::class)->except('update');
+  Route::resource('katalog', KatalogController::class)->except(['update','destroy']);
   Route::post('katalog/{katalog}/update', [KatalogController::class, 'update'])->name('katalog.update');
-  Route::resource('bobot', BobotController::class)->only('store', 'destroy');
   Route::post('katalog/{katalog}/process', [KatalogController::class, 'process'])->name('katalog.process');
+  Route::post('katalog/{katalog}/destroy', [KatalogController::class, 'destroy'])->name('katalog.destroy');
+
+  Route::resource('bobot', BobotController::class)->only('store');
+  Route::post('bobot/{bobot}/destroy', [BobotController::class, 'destroy'])->name('bobot.destroy');
 
   Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 });
 Route::middleware(['auth', 'roles:4'])->group(function () {
-  Route::resource('users', UserController::class)->except('update');
+  Route::resource('users', UserController::class)->except(['update','destroy']);
   Route::post('users/{user}/update', [UserController::class, 'update'])->name('users.update');
+  Route::post('users/{user}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
 });

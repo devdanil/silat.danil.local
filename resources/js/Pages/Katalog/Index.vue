@@ -275,7 +275,7 @@ export default defineComponent({
                 cancelButtonColor: "#ef4444",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    this.$inertia.delete(this.route("katalog.destroy", item), {
+                    this.$inertia.post(this.route("katalog.destroy", item),{}, {
                         preserveScroll: true,
                         only: ["list", "flash"],
                     });

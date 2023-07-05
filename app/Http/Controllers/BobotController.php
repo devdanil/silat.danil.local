@@ -21,7 +21,7 @@ class BobotController extends Controller
     {
         $data           = $request->validated();
         $bobot = PelatihanBobot::updateOrCreate(['id' => $request->post('id')], $data);
-        $this->generate_bobot($bobot, $request->post('id') != null);
+        $this->generate_bobot($bobot);
         $request->session()->flash('flash.msg', 'Data berhasil disimpan');
         $request->session()->flash('flash.error', false);
         return back();
@@ -36,7 +36,7 @@ class BobotController extends Controller
         return back();
     }
 
-    private function generate_bobot(PelatihanBobot $pelatihan_bobot, $update = true)
+    private function generate_bobot(PelatihanBobot $pelatihan_bobot)
     {
         $pelatihan = Pelatihan::find($pelatihan_bobot->pelatihan_id);
         if ($pelatihan->bobot->count() > 0) {
@@ -44,7 +44,7 @@ class BobotController extends Controller
             $jenis_pelatihan = $katalog->jenis_pelatihan;
             $pelatihan_id = $pelatihan->id;
             $pendaftaran = Pendaftaran::select('id', 'nip')->where('pelatihan_id', $pelatihan_bobot->pelatihan_id)->with('peserta', function ($query) use ($jenis_pelatihan, $pelatihan_id) {
-                $query->select('nip', 'kd_jabatan', 'lokasi_dinas', 'kd_jabatan', 'kd_golongan')->withCount(['riwayatPelatihan as gagal' => function ($query2) use ($jenis_pelatihan) {
+                $query->select('nip', 'kd_jabatan', 'lokasi_dinas', 'kd_jabatan', 'kd_golongan', 'id_kota')->withCount(['riwayatPelatihan as gagal' => function ($query2) use ($jenis_pelatihan) {
                     $query2->where('jenis_pelatihan', $jenis_pelatihan)->where('status', 'like', 'Tidak Disetujui%');
                 }, 'riwayatPelatihan as mengulang' => function ($query2) use ($jenis_pelatihan) {
                     $query2->where('jenis_pelatihan', $jenis_pelatihan)->whereYear('created_date', date('Y'));
@@ -60,7 +60,11 @@ class BobotController extends Controller
             foreach ($pendaftaran as $key) {
                 $bobot = 0;
                 foreach ($pelatihan->bobot as $key2) {
-                    $jumlah_peserta[$key2->key] = isset($jumlah_peserta[$key2->key]) ? $jumlah_peserta[$key2->key] : 0;
+                    if ($key2->key == 'kabkota') {
+                        $jumlah_peserta[$key2->key.$key2->kabkota_id] = isset($jumlah_peserta[$key2->key.$key2->kabkota_id]) ? $jumlah_peserta[$key2->key.$key2->kabkota_id] : 0;
+                    } else {
+                        $jumlah_peserta[$key2->key] = isset($jumlah_peserta[$key2->key]) ? $jumlah_peserta[$key2->key] : 0;
+                    }
                     if ($key2->key == 'angka_kredit' && $key2->kd_jabatan == $key->peserta->kd_jabatan) {
                         $maximal = !$key->peserta->kd_golongan ? 15 : ($key->peserta->golongan->last_order ? $key->peserta->jabatan->naik_jenjang : $key->peserta->jabatan->naik_pangkat);
                         $minimal = $maximal * $key2->nilai / 100;
@@ -93,6 +97,9 @@ class BobotController extends Controller
                     } elseif ($key2->key == 'peserta_mengulang' && ($key->peserta->mengulang > 0 || $key->peserta->mengulang2 > 0)) {
                         $bobot = $bobot - $key2->bobot;
                         $jumlah_peserta[$key2->key] = $jumlah_peserta[$key2->key] + 1;
+                    } elseif ($key2->key == 'kabkota' && $key2->kabkota_id == $key->peserta->id_kota) {
+                        $bobot = $bobot + $key2->bobot;
+                        $jumlah_peserta[$key2->key.$key2->kabkota_id] = $jumlah_peserta[$key2->key.$key2->kabkota_id] + 1;
                     } else {
                         if ($key2->key == $key->peserta->kd_jabatan) {
                             $bobot = $bobot + $key2->bobot;
@@ -102,9 +109,12 @@ class BobotController extends Controller
                 }
                 Pendaftaran::where('id', $key->id)->update(['jumlah_bobot' => $bobot, 'updated_by' => Auth::id()]);
             }
-            if ($update && isset($jumlah_peserta[$pelatihan_bobot->key]) && $jumlah_peserta[$pelatihan_bobot->key] > 0) {
-                $pelatihan_bobot->update(['jumlah_peserta' => $jumlah_peserta[$pelatihan_bobot->key]]);
+            if ($pelatihan_bobot->key != 'kabkota') {
+                $jumlah_peserta[$pelatihan_bobot->key] = isset($jumlah_peserta[$pelatihan_bobot->key]) ? $jumlah_peserta[$pelatihan_bobot->key] : 0;
+            } else {
+                $jumlah_peserta[$pelatihan_bobot->key] = isset($jumlah_peserta[$pelatihan_bobot->key.$pelatihan_bobot->kabkota_id]) ? $jumlah_peserta[$pelatihan_bobot->key.$pelatihan_bobot->kabkota_id] : 0;
             }
+            $pelatihan_bobot->update(['jumlah_peserta' => $jumlah_peserta[$pelatihan_bobot->key]]);
         }
     }
 }

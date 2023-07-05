@@ -16,6 +16,7 @@ class PelatihanBobot extends Model
         'bobot',
         'kd_jabatan',
         'nilai',
+        'kabkota_id',
         'jumlah_peserta'
     ];
 
@@ -30,5 +31,9 @@ class PelatihanBobot extends Model
     public function peserta()
     {
         return $this->hasMany(Peserta::class, 'kd_jabatan', 'key');
+    }
+    public function kota()
+    {
+        return $this->belongsTo(Kota::class, 'kabkota_id', 'id');
     }
 }

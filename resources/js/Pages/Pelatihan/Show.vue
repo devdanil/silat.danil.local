@@ -19,16 +19,7 @@
       </li>
     </template>
     <div
-      class="
-        p-3
-        mb-3
-        rounded-lg
-        text-sky-900
-        bg-sky-200
-        shadow
-        flex
-        items-center
-      "
+      class="p-3 mb-3 rounded-lg text-sky-900 bg-sky-200 shadow flex items-center"
       v-if="
         pelatihan.status.notification && hasRolesID([pelatihan.status.role_id])
       "
@@ -189,7 +180,7 @@
             </tr>
             <tr
               v-if="
-                ketalog.jenis_pelatihan == 'fungsional' && katalog.ket_jabatan
+                katalog.jenis_pelatihan == 'fungsional' && katalog.ket_jabatan
               "
             >
               <td class="pl-6 pr-3 align-top py-2 whitespace-nowrap">
@@ -322,18 +313,7 @@
               <td class="td">:</td>
               <td class="pl-3 pr-6 py-2 align-top">
                 <span
-                  class="
-                    px-2
-                    py-0.5
-                    font-semibold
-                    text-xs
-                    tracking-wider
-                    rounded-full
-                    shadow
-                    bg-violet-200
-                    text-violet-900
-                    shadow-violet-500
-                  "
+                  class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-violet-200 text-violet-900 shadow-violet-500"
                   v-if="
                     pelatihan.status_id == 6 &&
                     new Date(pelatihan.selesai_pelatihan).getTime() >=
@@ -344,18 +324,7 @@
                   >Pelatihan Sedang Berjalan</span
                 >
                 <span
-                  class="
-                    px-2
-                    py-0.5
-                    font-semibold
-                    text-xs
-                    tracking-wider
-                    rounded-full
-                    shadow
-                    bg-lime-200
-                    text-lime-900
-                    shadow-lime-500
-                  "
+                  class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-lime-200 text-lime-900 shadow-lime-500"
                   v-else-if="
                     pelatihan.status_id == 6 &&
                     new Date(today).getTime() >
@@ -365,15 +334,7 @@
                 >
                 <span
                   v-else
-                  class="
-                    px-2
-                    py-0.5
-                    font-semibold
-                    text-xs
-                    tracking-wider
-                    rounded-full
-                    shadow
-                  "
+                  class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow"
                   :class="{
                     'bg-sky-200 text-sky-900 shadow-sky-500':
                       pelatihan.status_id == 1,
@@ -414,14 +375,7 @@
                     <a
                       target="_blank"
                       :href="file.file"
-                      class="
-                        ml-2
-                        flex-1
-                        w-0
-                        truncate
-                        text-sky-400
-                        hover:text-sky-600
-                      "
+                      class="ml-2 flex-1 w-0 truncate text-sky-400 hover:text-sky-600"
                     >
                       {{ file.name }}
                     </a>
@@ -439,14 +393,7 @@
                 <a
                   target="_blank"
                   :href="pelatihan.surat_pemanggilan"
-                  class="
-                    ml-2
-                    flex-1
-                    w-0
-                    truncate
-                    text-sky-400
-                    hover:text-sky-600
-                  "
+                  class="ml-2 flex-1 w-0 truncate text-sky-400 hover:text-sky-600"
                 >
                   Download
                 </a>
@@ -471,7 +418,9 @@
               (bobot.key = ''),
               (bobot.bobot = null),
               (bobot.nilai = null),
-              (bobot.kd_jabatan = '')
+              (bobot.kd_jabatan = ''),
+              (bobot.provinsi_id = ''),
+              (bobot.kabkota_id = '')
           "
         >
           <PlusIcon class="h-5 w-5 mr-2" />Bobot
@@ -492,50 +441,24 @@
               <tr>
                 <th
                   scope="col"
-                  class="
-                    text-left
-                    pl-6
-                    pr-3
-                    text-xs
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wider
-                  "
+                  class="text-left pl-6 pr-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   No.
                 </th>
                 <th scope="col" class="text-left th">Kriteria</th>
                 <th scope="col" class="text-left th">Jenis JF</th>
                 <th scope="col" class="text-right th">Nilai Minimal</th>
+                <th scope="col" class="text-right th">Kabupaten/Kota</th>
                 <th scope="col" class="text-right th">Bobot</th>
                 <th
                   scope="col"
-                  class="
-                    text-right
-                    pl-3
-                    pr-6
-                    text-xs
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wider
-                  "
+                  class="text-right pl-3 pr-6 text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   Jumlah Peserta
                 </th>
                 <th
                   scope="col"
-                  class="
-                    pl-3
-                    pr-6
-                    text-xs
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wider
-                    text-center
-                  "
+                  class="pl-3 pr-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-center"
                   v-if="
                     (pelatihan.status_id == 2 ||
                       pelatihan.status_id == 3 ||
@@ -549,7 +472,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="bobots.length == 0">
-                <td colspan="8" class="text-center">Kosong</td>
+                <td colspan="9" class="text-center">Kosong</td>
               </tr>
               <tr v-for="(item, index) in bobots" :key="index">
                 <td class="pl-6 pr-3 py-2 align-top w-1 whitespace-nowrap">
@@ -563,6 +486,9 @@
                 </td>
                 <td class="td text-right">
                   {{ item.nilai ? item.nilai + "%" : "-" }}
+                </td>
+                <td class="pl-3 pr-6 py-2 align-top text-right">
+                  {{ item.kabkota_id ? item.kota.nama : "-" }}
                 </td>
                 <td class="td text-right">{{ item.bobot }}%</td>
                 <td class="pl-3 pr-6 py-2 align-top text-right">
@@ -582,14 +508,7 @@
                   <button
                     type="button"
                     title="Ubah"
-                    @click="
-                      (showModal = true),
-                        (bobot.id = item.id),
-                        (bobot.key = item.key),
-                        (bobot.nilai = item.nilai),
-                        (bobot.kd_jabatan = item.kd_jabatan),
-                        (bobot.bobot = item.bobot)
-                    "
+                    @click="toggleModal(item)"
                     class="ml-1 btn btn-sm btn-yellow"
                   >
                     <PencilSquareIcon class="h-5 w-5" />
@@ -644,29 +563,14 @@
           <div class="mt-1 flex flex-col sm:flex-row">
             <div class="rounded-md flex">
               <span
-                class="
-                  inline-flex
-                  items-center
-                  px-3
-                  rounded-l-md
-                  border border-r-0 border-gray-300
-                  bg-sky-50
-                  text-gray-500 text-sm
-                "
+                class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-sky-50 text-gray-500 text-sm"
               >
                 Tampilkan
               </span>
 
               <select
                 @change.prevent="filters"
-                class="
-                  focus:ring-sky-500 focus:border-sky-500
-                  w-full
-                  sm:w-auto
-                  rounded-none rounded-r-md
-                  sm:text-sm
-                  border-gray-300
-                "
+                class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none rounded-r-md sm:text-sm border-gray-300"
                 v-model="filter.limit"
               >
                 <option value="10">10</option>
@@ -681,29 +585,14 @@
               v-if="pelatihan.status_id > 1"
             >
               <span
-                class="
-                  inline-flex
-                  items-center
-                  px-3
-                  rounded-l-md
-                  border border-r-0 border-gray-300
-                  bg-sky-50
-                  text-gray-500 text-sm
-                "
+                class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-sky-50 text-gray-500 text-sm"
               >
                 Status
               </span>
 
               <select
                 @change.prevent="filters"
-                class="
-                  focus:ring-sky-500 focus:border-sky-500
-                  w-full
-                  sm:w-auto
-                  rounded-none rounded-r-md
-                  sm:text-sm
-                  border-gray-300
-                "
+                class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none rounded-r-md sm:text-sm border-gray-300"
                 v-model="filter.status"
               >
                 <option value="">Semua</option>
@@ -718,16 +607,7 @@
             </div>
             <div class="rounded-md flex sm:ml-auto mt-3 sm:mt-0">
               <select
-                class="
-                  focus:ring-sky-500 focus:border-sky-500
-                  w-full
-                  sm:w-50
-                  rounded-none rounded-l-md
-                  sm:text-sm
-                  bg-sky-50
-                  text-gray-500 text-sm
-                  border-gray-300 border-r-transparent
-                "
+                class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-50 rounded-none rounded-l-md sm:text-sm bg-sky-50 text-gray-500 text-sm border-gray-300 border-r-transparent"
                 v-model="filter.key"
               >
                 <option value="nip">NIP</option>
@@ -741,26 +621,12 @@
                 @keyup.enter="filters"
                 type="text"
                 v-model="filter.search"
-                class="
-                  focus:ring-sky-500 focus:border-sky-500
-                  w-full
-                  sm:w-auto
-                  rounded-none
-                  sm:text-sm
-                  border-gray-300
-                "
+                class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none sm:text-sm border-gray-300"
               />
               <button
                 type="button"
                 @click.prevent="filters"
-                class="
-                  bg-sky-500
-                  rounded-none rounded-r-md
-                  px-2
-                  text-white
-                  hover:bg-sky-600
-                  focus:outline-none
-                "
+                class="bg-sky-500 rounded-none rounded-r-md px-2 text-white hover:bg-sky-600 focus:outline-none"
               >
                 <MagnifyingGlassIcon class="h-5 w-5" />
               </button>
@@ -773,16 +639,7 @@
               <tr>
                 <th
                   scope="col"
-                  class="
-                    text-left
-                    pl-6
-                    pr-3
-                    text-xs
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wider
-                  "
+                  class="text-left pl-6 pr-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   No.
                 </th>
@@ -805,16 +662,7 @@
                     hasRolesID([2, 3])
                   "
                   scope="col"
-                  class="
-                    pl-3
-                    pr-6
-                    text-xs
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wider
-                    text-right
-                  "
+                  class="pl-3 pr-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right"
                 >
                   Jumlah Bobot
                 </th>
@@ -877,17 +725,7 @@
 
                   <div
                     v-else
-                    class="
-                      h-8
-                      w-8
-                      bg-slate-500
-                      rounded-full
-                      flex
-                      items-center
-                      justify-center
-                      text-white text-xs
-                      shadow shadow-slate-900
-                    "
+                    class="h-8 w-8 bg-slate-500 rounded-full flex items-center justify-center text-white text-xs shadow shadow-slate-900"
                   >
                     N/A
                   </div>
@@ -903,50 +741,17 @@
                   v-if="pelatihan.status_id > 1"
                 >
                   <span
-                    class="
-                      px-2
-                      py-0.5
-                      font-semibold
-                      text-xs
-                      tracking-wider
-                      rounded-full
-                      shadow
-                      bg-teal-200
-                      text-teal-900
-                      shadow-teal-500
-                    "
+                    class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-teal-200 text-teal-900 shadow-teal-500"
                     v-if="item.pendaftaran[0].approved_at"
                   >
                     Disetujui </span
                   ><span
-                    class="
-                      px-2
-                      py-0.5
-                      font-semibold
-                      text-xs
-                      tracking-wider
-                      rounded-full
-                      shadow
-                      bg-red-200
-                      text-red-900
-                      shadow-red-500
-                    "
+                    class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-red-200 text-red-900 shadow-red-500"
                     v-else-if="item.pendaftaran[0].rejected_at"
                   >
                     Ditolak </span
                   ><span
-                    class="
-                      px-2
-                      py-0.5
-                      font-semibold
-                      text-xs
-                      tracking-wider
-                      rounded-full
-                      shadow
-                      bg-sky-200
-                      text-sky-900
-                      shadow-sky-500
-                    "
+                    class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-sky-200 text-sky-900 shadow-sky-500"
                     v-else-if="
                       item.pendaftaran[0].confirmed_at &&
                       !item.pendaftaran[0].approved_at
@@ -954,18 +759,7 @@
                   >
                     Dikonfirmasi </span
                   ><span
-                    class="
-                      px-2
-                      py-0.5
-                      font-semibold
-                      text-xs
-                      tracking-wider
-                      rounded-full
-                      shadow
-                      bg-yellow-200
-                      text-yellow-900
-                      shadow-yellow-500
-                    "
+                    class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-yellow-200 text-yellow-900 shadow-yellow-500"
                     v-else-if="
                       item.pendaftaran[0].registered_at &&
                       !item.pendaftaran[0].confirmed_at
@@ -974,18 +768,7 @@
                     Terdaftar
                   </span>
                   <span
-                    class="
-                      px-2
-                      py-0.5
-                      font-semibold
-                      text-xs
-                      tracking-wider
-                      rounded-full
-                      shadow
-                      bg-gray-200
-                      text-gray-900
-                      shadow-gray-500
-                    "
+                    class="px-2 py-0.5 font-semibold text-xs tracking-wider rounded-full shadow bg-gray-200 text-gray-900 shadow-gray-500"
                     v-else
                   >
                     Tidak Terdaftar
@@ -1056,14 +839,7 @@
           </table>
         </div>
         <div
-          class="
-            border-t
-            flex flex-col
-            sm:flex-row
-            items-center
-            justify-between
-            p-4
-          "
+          class="border-t flex flex-col sm:flex-row items-center justify-between p-4"
         >
           <div>
             Menampilkan {{ peserta.data.length }} dari {{ peserta.total }} Data
@@ -1085,14 +861,7 @@
       <Modal :show="showModal">
         <div class="bg-gray-50 px-4 py-3 sm:px-6">
           <div
-            class="
-              text-xl
-              font-semibold
-              tracking-wider
-              flex
-              items-center
-              text-gray-500
-            "
+            class="text-xl font-semibold tracking-wider flex items-center text-gray-500"
           >
             <PencilSquareIcon class="w-6 h-6 mr-2" /> Form Bobot
           </div>
@@ -1113,6 +882,44 @@
                   :value="item.key"
                 >
                   {{ item.value }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-span-1" v-if="bobot.key == 'kabkota'">Provinsi</div>
+            <div class="col-span-2" v-if="bobot.key == 'kabkota'">
+              <select
+                v-model="bobot.provinsi_id"
+                @change="getKabkota()"
+                class="f-input px-2 focus:border-transparent"
+                required
+              >
+                <option value="">Pilih</option>
+                <option
+                  v-for="(item, index) in provinsi"
+                  :key="index"
+                  :value="item.id"
+                >
+                  {{ item.nama }}
+                </option>
+              </select>
+            </div>
+            <div class="col-span-1" v-if="bobot.key == 'kabkota'">
+              Kabupaten/Kota
+            </div>
+            <div class="col-span-2" v-if="bobot.key == 'kabkota'">
+              <select
+                v-model="bobot.kabkota_id"
+                class="f-input px-2 focus:border-transparent"
+                required
+              >
+                <option value="">Pilih</option>
+                <option
+                  v-for="(item, index) in kabkota"
+                  :key="index"
+                  :value="item.id"
+                >
+                  {{ item.nama }}
                 </option>
               </select>
             </div>
@@ -1157,30 +964,11 @@
                   type="number"
                   min="0"
                   max="100"
-                  class="
-                    focus:ring-sky-300
-                    py-1.5
-                    focus:border-sky-400
-                    w-full
-                    border-0
-                    rounded-l
-                    sm:text-sm
-                    border-gray-300
-                    px-2
-                  "
+                  class="focus:ring-sky-300 py-1.5 focus:border-sky-400 w-full border-0 rounded-l sm:text-sm border-gray-300 px-2"
                   required
                 />
                 <span
-                  class="
-                    position-absolute
-                    border-l
-                    right-0
-                    px-2
-                    py-1.5
-                    rounded-r
-                    sm:text-sm
-                    border-gray-300
-                  "
+                  class="position-absolute border-l right-0 px-2 py-1.5 rounded-r sm:text-sm border-gray-300"
                   >%</span
                 >
               </div>
@@ -1193,30 +981,11 @@
                   type="number"
                   min="0"
                   max="100"
-                  class="
-                    focus:ring-sky-300
-                    py-1.5
-                    focus:border-sky-400
-                    w-full
-                    border-0
-                    rounded-l
-                    sm:text-sm
-                    border-gray-300
-                    px-2
-                  "
+                  class="focus:ring-sky-300 py-1.5 focus:border-sky-400 w-full border-0 rounded-l sm:text-sm border-gray-300 px-2"
                   required
                 />
                 <span
-                  class="
-                    position-absolute
-                    border-l
-                    right-0
-                    px-2
-                    py-1.5
-                    rounded-r
-                    sm:text-sm
-                    border-gray-300
-                  "
+                  class="position-absolute border-l right-0 px-2 py-1.5 rounded-r sm:text-sm border-gray-300"
                   >%</span
                 >
               </div>
@@ -1246,14 +1015,7 @@
       <Modal :show="showUploadPemanggilan">
         <div class="bg-gray-50 px-4 py-3 sm:px-6">
           <div
-            class="
-              text-xl
-              font-semibold
-              tracking-wider
-              flex
-              items-center
-              text-gray-500
-            "
+            class="text-xl font-semibold tracking-wider flex items-center text-gray-500"
           >
             <PencilSquareIcon class="w-6 h-6 mr-2" /> Form Pemanggilan
           </div>
@@ -1284,27 +1046,7 @@
                 type="file"
                 @input="pemanggilan.surat_pemanggilan = $event.target.files[0]"
                 accept=".pdf,.doc,.docx"
-                class="
-                  w-full
-                  focus:outline-none
-                  border-1 border-gray-300
-                  focus:ring-2 focus:ring-sky-300
-                  rounded
-                  sm:text-sm
-                  file:border-0
-                  pr-14
-                  file:mr-5
-                  file:py-1.5
-                  file:px-2
-                  file:rounded-l
-                  file:text-md
-                  file:font-semibold
-                  file:bg-gray-300
-                  file:text-gray-600
-                  hover:file:cursor-pointer
-                  hover:file:bg-gray-400
-                  hover:file:text-gray-700
-                "
+                class="w-full focus:outline-none border-1 border-gray-300 focus:ring-2 focus:ring-sky-300 rounded sm:text-sm file:border-0 pr-14 file:mr-5 file:py-1.5 file:px-2 file:rounded-l file:text-md file:font-semibold file:bg-gray-300 file:text-gray-600 hover:file:cursor-pointer hover:file:bg-gray-400 hover:file:text-gray-700"
                 required
               />
             </div>
@@ -1389,6 +1131,8 @@ export default defineComponent({
     status: Object,
     kriteria: Array,
     bobots: Array,
+    provinsi: Array,
+    kabkota: Array,
   },
 
   data() {
@@ -1406,6 +1150,8 @@ export default defineComponent({
         kd_jabatan: "",
         nilai: null,
         bobot: null,
+        provinsi_id: "",
+        kabkota_id: "",
         pelatihan_id: this.pelatihan.id,
       }),
       instansi: {
@@ -1549,7 +1295,7 @@ export default defineComponent({
         cancelButtonColor: "#ef4444",
       }).then((result) => {
         if (result.isConfirmed) {
-          this.$inertia.delete(this.route("bobot.destroy", item), {
+          this.$inertia.post(this.route("bobot.destroy", item),{}, {
             preserveScroll: true,
             only: ["bobots", "peserta", "flash"],
           });
@@ -1806,6 +1552,30 @@ export default defineComponent({
           );
         }
       });
+    },
+    getKabkota(kabkota_id = "") {
+      this.$inertia.get(
+        route("pelatihan.show", this.pelatihan.slug),
+        { provinsi_id: this.bobot.provinsi_id },
+        {
+          only: ["kabkota"],
+          preserveState: true,
+          preserveScroll: true,
+          onFinish: () => {
+            this.bobot.kabkota_id = kabkota_id;
+          },
+        }
+      );
+    },
+    toggleModal(item) {
+      this.showModal = true;
+      this.bobot.id = item.id;
+      this.bobot.key = item.key;
+      this.bobot.nilai = item.nilai;
+      this.bobot.kd_jabatan = item.kd_jabatan;
+      this.bobot.bobot = item.bobot;
+      this.bobot.provinsi_id = item.kota.id_provinsi;
+      this.getKabkota(item.kabkota_id);
     },
   },
 });

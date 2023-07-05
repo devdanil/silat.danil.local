@@ -9,4 +9,9 @@ class Kota extends Model
 {
     use HasFactory;
     protected $table = 'mst_kota';
+
+    public function provinsi()
+    {
+        return $this->belongsTo(Provinsi::class, 'id_provinsi', 'id');
+    }
 }

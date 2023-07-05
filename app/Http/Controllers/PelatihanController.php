@@ -8,10 +8,12 @@ use App\Exports\PelatihanExport;
 use App\Http\Requests\StorePelatihanRequest;
 use App\Models\Jabatan;
 use App\Models\Katalog;
+use App\Models\Kota;
 use App\Models\Pelatihan;
 use App\Models\PelatihanBobot;
 use App\Models\Pendaftaran;
 use App\Models\Peserta;
+use App\Models\Provinsi;
 use App\Models\Status;
 use App\Models\Variable;
 use Illuminate\Database\Eloquent\Builder;
@@ -103,7 +105,7 @@ class PelatihanController extends Controller
       $query->whereNotIn('key',  ['instansi_uml', 'instansi_pusat']);
     })->orWhere('group', 'jabatan')->whereIn('key', $kd_jabatan)->orderBy('order', 'asc')->get(['key', 'value']);
 
-    $data['bobots'] = PelatihanBobot::select('id', 'key', 'bobot', 'nilai', 'kd_jabatan', 'jumlah_peserta')->with(['variable:key,value', 'jabatan:kd_jabatan,jabatan'])->where('pelatihan_id', $pelatihan->id)->orderByDesc('id')->get();
+    $data['bobots'] = PelatihanBobot::select('id', 'key', 'bobot', 'nilai', 'kd_jabatan', 'jumlah_peserta','kabkota_id')->with(['variable:key,value', 'jabatan:kd_jabatan,jabatan','kota:id,nama,id_provinsi'])->where('pelatihan_id', $pelatihan->id)->orderByDesc('id')->get();
 
     $data['filter'] = [
       'limit' => $request->get('limit') ?? 10,
@@ -142,11 +144,14 @@ class PelatihanController extends Controller
       $query->on('silat_pendaftaran.nip', '=', 'tbm_pegawai.nip')->where('silat_pendaftaran.pelatihan_id', $pelatihan->id);
     })->with('jabatan')->orderBy('approved_at', 'asc')->orderBy('confirmed_at', 'asc')->orderBy('registered_at', 'asc')->orderByDesc('jumlah_bobot')->orderBy('confirmed_at', 'ASC')->orderBy('nama_lengkap', 'ASC')->paginate($data['filter']['limit'])->appends($data['filter']);
 
-    $pendaftaran = Pendaftaran::where('pelatihan_id', $pelatihan->id)->get();
-    $data['status']['approved'] =  $pendaftaran->whereNotNull('approved_at')->count();
-    $data['status']['rejected'] =  $pendaftaran->whereNotNull('rejected_at')->count();
-    $data['status']['confirmed'] =  $pendaftaran->whereNotNull('confirmed_at')->whereNull('approved_at')->count();
-    $data['status']['registered'] =  $pendaftaran->whereNotNull('registered_at')->whereNull('confirmed_at')->count();
+    $provinsi_id                    = $request->get('provinsi_id') ;
+    $data['provinsi']               = Provinsi::where('id_negara', 98)->orderBy('nama')->get(['id', 'nama']);
+    $data['kabkota']                = Kota::where('id_provinsi', $provinsi_id)->orderBy('nama')->get(['id', 'nama']);
+    $pendaftaran                    = Pendaftaran::where('pelatihan_id', $pelatihan->id)->get();
+    $data['status']['approved']     =  $pendaftaran->whereNotNull('approved_at')->count();
+    $data['status']['rejected']     =  $pendaftaran->whereNotNull('rejected_at')->count();
+    $data['status']['confirmed']    =  $pendaftaran->whereNotNull('confirmed_at')->whereNull('approved_at')->count();
+    $data['status']['registered']   =  $pendaftaran->whereNotNull('registered_at')->whereNull('confirmed_at')->count();
     $data['status']['unregistered'] =  $pendaftaran->whereNull('registered_at')->count();
     return Inertia::render('Pelatihan/Show', $data);
   }

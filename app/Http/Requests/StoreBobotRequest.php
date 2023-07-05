@@ -25,11 +25,12 @@ class StoreBobotRequest extends FormRequest
     public function rules()
     {
         return [
-            'key' => ['required', Rule::unique('silat_pelatihan_bobot')->where(function ($query) {
+            'key' => ['required', $this->key != 'kabkota' ? Rule::unique('silat_pelatihan_bobot')->where(function ($query) {
                 return $query->where('pelatihan_id', $this->pelatihan_id);
-            })->ignore($this->id)],
+            })->ignore($this->id) : ''],
             'bobot' => ['required', 'numeric', 'max:100'],
             'kd_jabatan' => ['required_if:key,angka_kredit', 'required_if:key,prestasi'],
+            'kabkota_id' => ['required_if:key,kabkota', 'required_if:key,prestasi'],
             'nilai' => ['required_if:key,angka_kredit'],
 
             'pelatihan_id' => ['required', 'numeric']
