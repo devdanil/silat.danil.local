@@ -42,7 +42,7 @@
                 ((pelatihan.status_id == 2 ||
                   pelatihan.status_id == 3 ||
                   pelatihan.status_id == 7) &&
-                  bobots.length > 0)) &&
+                  bobots.total > 0)) &&
               hasRolesID([pelatihan.status.role_id])
             "
           >
@@ -411,7 +411,7 @@
             hasRolesID([pelatihan.status.role_id])
           "
           type="button"
-          class="btn btn-md btn-sky"
+          class="btn btn-md btn-sky mr-1"
           @click="
             (showModal = !showModal),
               (bobot.id = null),
@@ -425,6 +425,19 @@
         >
           <PlusIcon class="h-5 w-5 mr-2" />Bobot
         </button>
+        <button
+          type="button"
+          @click.prevent="refreshBobot()"
+          class="btn btn-md btn-teal"
+          v-if="
+            (pelatihan.status_id == 2 ||
+              pelatihan.status_id == 3 ||
+              pelatihan.status_id == 7) &&
+            hasRolesID([pelatihan.status.role_id])
+          "
+        >
+          <ArrowPathIcon class="h-5 w-5 mr-2" /> Refresh Data
+        </button>
       </div>
       <div
         class="bg-white shadow rounded-lg mt-3 border-t-2 border-sky-500"
@@ -434,6 +447,51 @@
           <h2 class="text-lg leading-6 font-medium inline-flex items-center">
             <AcademicCapIcon class="h-6 w-6 mr-2" />Bobot Penilaian
           </h2>
+        </div>
+        <div class="px-4 py-2 border-b bg-gray-50">
+          <div class="mt-1 flex flex-col sm:flex-row">
+            <div class="rounded-md flex">
+              <span
+                class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-sky-50 text-gray-500 text-sm"
+              >
+                Tampilkan
+              </span>
+
+              <select
+                @change.prevent="filters('bobots')"
+                class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none rounded-r-md sm:text-sm border-gray-300"
+                v-model="filter.limit_bobot"
+              >
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="500">500</option>
+                <option :value="bobot.total">Semua</option>
+              </select>
+            </div>
+            <div class="rounded-md flex sm:ml-auto mt-3 sm:mt-0">
+              <span
+                class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-sky-50 text-gray-500 text-sm"
+              >
+                Kriteria
+              </span>
+
+              <select
+                @change.prevent="filters('bobots')"
+                class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none rounded-r-md sm:text-sm border-gray-300"
+                v-model="filter.kriteria_key"
+              >
+                <option value="">Semua</option>
+                <option
+                  v-for="(item, index) in kriteria"
+                  :key="index"
+                  :value="item.key"
+                >
+                  {{ item.value }}
+                </option>
+              </select>
+            </div>
+          </div>
         </div>
         <div class="overflow-auto pb-3">
           <table class="min-w-full divide-y divide-gray-200">
@@ -471,10 +529,10 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-if="bobots.length == 0">
+              <tr v-if="bobots.total == 0">
                 <td colspan="9" class="text-center">Kosong</td>
               </tr>
-              <tr v-for="(item, index) in bobots" :key="index">
+              <tr v-for="(item, index) in bobots.data" :key="index">
                 <td class="pl-6 pr-3 py-2 align-top w-1 whitespace-nowrap">
                   {{ index + 1 }}.
                 </td>
@@ -526,6 +584,14 @@
             </tbody>
           </table>
         </div>
+        <div
+          class="border-t flex flex-col sm:flex-row items-center justify-between p-4"
+        >
+          <div>
+            Menampilkan {{ bobots.data.length }} dari {{ bobots.total }} Data
+          </div>
+          <Pagination :links="bobots.links" :only="['bobots', 'filter']" />
+        </div>
       </div>
 
       <div
@@ -569,7 +635,7 @@
               </span>
 
               <select
-                @change.prevent="filters"
+                @change.prevent="filters('peserta')"
                 class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none rounded-r-md sm:text-sm border-gray-300"
                 v-model="filter.limit"
               >
@@ -591,7 +657,7 @@
               </span>
 
               <select
-                @change.prevent="filters"
+                @change.prevent="filters('peserta')"
                 class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none rounded-r-md sm:text-sm border-gray-300"
                 v-model="filter.status"
               >
@@ -618,14 +684,14 @@
                 </option>
               </select>
               <input
-                @keyup.enter="filters"
+                @keyup.enter="filters('peserta')"
                 type="text"
                 v-model="filter.search"
                 class="focus:ring-sky-500 focus:border-sky-500 w-full sm:w-auto rounded-none sm:text-sm border-gray-300"
               />
               <button
                 type="button"
-                @click.prevent="filters"
+                @click.prevent="filters('peserta')"
                 class="bg-sky-500 rounded-none rounded-r-md px-2 text-white hover:bg-sky-600 focus:outline-none"
               >
                 <MagnifyingGlassIcon class="h-5 w-5" />
@@ -656,11 +722,7 @@
                   Status
                 </th>
                 <th
-                  v-if="
-                    pelatihan.status_id > 1 &&
-                    bobots.length > 0 &&
-                    hasRolesID([2, 3])
-                  "
+                  v-if="colspan_peserta == 6 && hasRolesID([2, 3])"
                   scope="col"
                   class="pl-3 pr-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right"
                 >
@@ -673,7 +735,7 @@
                 <td
                   v-if="peserta.total == 0"
                   class="td text-center"
-                  colspan="6"
+                  colspan="7"
                 >
                   Kosong
                 </td>
@@ -776,11 +838,7 @@
                 </td>
                 <td
                   class="pl-3 pr-6 py-2 align-top text-right"
-                  v-if="
-                    pelatihan.status_id > 1 &&
-                    bobots.length > 0 &&
-                    hasRolesID([2, 3])
-                  "
+                  v-if="colspan_peserta == 6 && hasRolesID([2, 3])"
                 >
                   {{ item.pendaftaran[0].jumlah_bobot }}
                 </td>
@@ -791,7 +849,7 @@
               v-if="pelatihan.status_id > 1 && hasRolesID([2, 3])"
             >
               <tr>
-                <td class="pl-6 pr-3 py-2 align-top" colspan="6">
+                <td class="pl-6 pr-3 py-2 align-top" :colspan="colspan_peserta">
                   Jumlah Peserta yang Disetujui
                 </td>
 
@@ -800,7 +858,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="pl-6 pr-3 py-2 align-top" colspan="6">
+                <td class="pl-6 pr-3 py-2 align-top" :colspan="colspan_peserta">
                   Jumlah Peserta yang Ditolak
                 </td>
 
@@ -809,7 +867,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="pl-6 pr-3 py-2 align-top" colspan="6">
+                <td class="pl-6 pr-3 py-2 align-top" :colspan="colspan_peserta">
                   Jumlah Peserta yang Dikonfirmasi
                 </td>
 
@@ -818,7 +876,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="pl-6 pr-3 py-2 align-top" colspan="6">
+                <td class="pl-6 pr-3 py-2 align-top" :colspan="colspan_peserta">
                   Jumlah Peserta yang Terdaftar
                 </td>
 
@@ -827,7 +885,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="pl-6 pr-3 py-2 align-top" colspan="6">
+                <td class="pl-6 pr-3 py-2 align-top" :colspan="colspan_peserta">
                   Jumlah Peserta yang Tidak Terdaftar
                 </td>
 
@@ -1095,6 +1153,7 @@ import {
   ArrowDownTrayIcon,
   ScaleIcon,
   ArrowUpTrayIcon,
+  ArrowPathIcon,
 } from "@heroicons/vue/24/solid";
 
 export default defineComponent({
@@ -1121,6 +1180,7 @@ export default defineComponent({
     ArrowDownTrayIcon,
     ScaleIcon,
     ArrowUpTrayIcon,
+    ArrowPathIcon,
   },
   props: {
     title: String,
@@ -1190,6 +1250,8 @@ export default defineComponent({
         "November",
         "Desember",
       ],
+      colspan_peserta:
+        this.pelatihan.status_id > 1 && this.bobots.total > 0 ? 6 : 5,
     };
   },
   methods: {
@@ -1229,14 +1291,14 @@ export default defineComponent({
       }
       return result;
     },
-    filters() {
+    filters(load) {
       this.$inertia.get(
         this.route("pelatihan.show", this.pelatihan.slug),
         this.filter,
         {
           preserveState: true,
           preserveScroll: true,
-          only: ["filter", "peserta"],
+          only: ["filter", load],
         }
       );
     },
@@ -1278,7 +1340,27 @@ export default defineComponent({
             only: ["bobots", "peserta", "flash", "errors"],
             onFinish: () => {
               this.showModal = false;
+              this.colspan_peserta =
+                this.pelatihan.status_id > 1 && this.bobots.total > 0 ? 6 : 5;
             },
+            preserveScroll: true,
+          });
+        }
+      });
+    },
+    refreshBobot() {
+      Swal.fire({
+        text: "Apakah anda yakin akan merefresh data pembobotan ini ?",
+        icon: "question",
+        confirmButtonText: "Ya, Lanjutkan",
+        cancelButtonText: "Batalkan",
+        showCancelButton: true,
+        confirmButtonColor: "#0ea5e9",
+        cancelButtonColor: "#ef4444",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.bobot.post(this.route("bobot.refresh", this.pelatihan.slug), {
+            only: ["bobots", "peserta", "flash", "errors"],
             preserveScroll: true,
           });
         }
@@ -1295,10 +1377,18 @@ export default defineComponent({
         cancelButtonColor: "#ef4444",
       }).then((result) => {
         if (result.isConfirmed) {
-          this.$inertia.post(this.route("bobot.destroy", item),{}, {
-            preserveScroll: true,
-            only: ["bobots", "peserta", "flash"],
-          });
+          this.$inertia.post(
+            this.route("bobot.destroy", item),
+            {},
+            {
+              onFinish: () => {
+                this.colspan_peserta =
+                  this.pelatihan.status_id > 1 && this.bobots.total > 0 ? 6 : 5;
+              },
+              preserveScroll: true,
+              only: ["bobots", "peserta", "flash"],
+            }
+          );
         }
       });
     },
@@ -1568,14 +1658,15 @@ export default defineComponent({
       );
     },
     toggleModal(item) {
+      let id_provinsi = item.kota ? item.kota.id_provinsi : "";
       this.showModal = true;
       this.bobot.id = item.id;
       this.bobot.key = item.key;
       this.bobot.nilai = item.nilai;
-      this.bobot.kd_jabatan = item.kd_jabatan;
+      this.bobot.kd_jabatan = item.kd_jabatan ?? "";
       this.bobot.bobot = item.bobot;
-      this.bobot.provinsi_id = item.kota.id_provinsi;
-      this.getKabkota(item.kabkota_id);
+      this.bobot.provinsi_id = id_provinsi;
+      if (id_provinsi) this.getKabkota(item.kabkota_id);
     },
   },
 });

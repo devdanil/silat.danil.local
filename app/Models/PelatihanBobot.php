@@ -36,4 +36,8 @@ class PelatihanBobot extends Model
     {
         return $this->belongsTo(Kota::class, 'kabkota_id', 'id');
     }
+    public function pelatihan()
+    {
+        return $this->belongsTo(Pelatihan::class, 'pelatihan_id', 'id');
+    }
 }

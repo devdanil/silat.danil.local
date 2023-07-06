@@ -55,8 +55,9 @@ Route::middleware('auth')->group(function () {
   Route::post('katalog/{katalog}/process', [KatalogController::class, 'process'])->name('katalog.process');
   Route::post('katalog/{katalog}/destroy', [KatalogController::class, 'destroy'])->name('katalog.destroy');
 
-  Route::resource('bobot', BobotController::class)->only('store');
+  Route::resource('bobot', BobotController::class)->only('store','update');
   Route::post('bobot/{bobot}/destroy', [BobotController::class, 'destroy'])->name('bobot.destroy');
+  Route::post('bobot/{pelatihan}/refresh', [BobotController::class, 'refresh'])->name('bobot.refresh');
 
   Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
